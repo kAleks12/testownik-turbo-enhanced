@@ -1,0 +1,14 @@
+{
+    "IsEncrypted": false,
+    "Values": {
+        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+        "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+        "JWT__Key": null,
+        "USOS__ConsumerKey": null,
+        "USOS__ConsumerSecret": null,
+        "USOS__CallbackUrl": "http://localhost:7071/api/callback",
+        "USOS__RequestTokenUrl": "https://apps.usos.pwr.edu.pl/services/oauth/request_token",
+        "USOS__AuthorizeUrl": "https://apps.usos.pwr.edu.pl/services/oauth/authorize",
+        "USOS__AccessTokenUrl": "https://apps.usos.pwr.edu.pl/services/oauth/access_token"
+    }
+}
