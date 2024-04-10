@@ -33,15 +33,68 @@ public class CallbackTrigger
     [Function(nameof(CallbackTrigger))]
     public async Task<HttpResponseData> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "callback")] 
-        HttpRequestData req)
+        HttpRequestData req,
+        CancellationToken cancellationToken)
     {
         var token = req.Query["oauth_token"];
-        ArgumentNullException.ThrowIfNull(token, "oauth_token");
 
         var verifier = req.Query["oauth_verifier"];
-        ArgumentNullException.ThrowIfNull(verifier, "oauth_verifier");
 
-        var (consumerKey, consumerSecret, _, _, _, accessTokenUrl) = _options;
+        if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(verifier))
+        {
+            return req.CreateResponse(HttpStatusCode.BadRequest);
+        }
+
+        var client = _clientFactory.CreateClient(HttpClientNames.USOS);
+
+        var accessTokenResult = await GetAccessTokenAsync(token, verifier, client, cancellationToken);
+        
+        var coursesResponse = await GetCoursesAsync(client, accessTokenResult, cancellationToken);
+
+        var okResponse = req.CreateResponse(HttpStatusCode.OK);
+
+        var coursesResult = await coursesResponse.Content.ReadAsStringAsync(cancellationToken);
+
+        await okResponse.WriteStringAsync(coursesResult);
+
+        return okResponse;
+    }
+
+    private async Task<HttpResponseMessage> GetCoursesAsync(
+        HttpClient client, 
+        OAuthResponseDto accessTokenResult, 
+        CancellationToken cancellationToken)
+    {
+        var (consumerKey, consumerSecret, _, apiUrl) = _options;
+
+        var coursesQuery = new Dictionary<string, string>
+        {
+            ["oauth_consumer_key"] = consumerKey,
+            ["oauth_nonce"] = Guid.NewGuid().ToString(),
+            ["oauth_timestamp"] = DateTimeOffset.Now.ToUnixTimeSeconds().ToString(),
+            ["oauth_signature_method"] = "HMAC-SHA1",
+            ["oauth_token"] = accessTokenResult.OAuthToken,
+            ["oauth_version"] = "1.0",
+        };
+
+        var coursesEndpoint = apiUrl + UsosEndpoints.UserCourses;
+        var coursesKey = consumerSecret + "&" + accessTokenResult.OAuthTokenSecret;
+        coursesQuery["oauth_signature"] = OAuthHelper.GetSignature(coursesQuery, coursesEndpoint, coursesKey);
+
+        var coursesUri = coursesEndpoint + "?" + 
+            string.Join("&", coursesQuery.OrderBy(x => x.Key).Select(x => $"{x.Key}={x.Value}"));
+
+        var coursesResponse = await client.GetAsync(coursesUri, cancellationToken);
+        return coursesResponse;
+    }
+
+    private async Task<OAuthResponseDto> GetAccessTokenAsync(
+        string token, 
+        string verifier, 
+        HttpClient client, 
+        CancellationToken cancellationToken)
+    {
+        var (consumerKey, consumerSecret, _, apiUrl) = _options;
 
         var parsedResult = _cache.Get<OAuthResponseDto>(CacheKeys.TokenResult);
         ArgumentNullException.ThrowIfNull(parsedResult);
@@ -57,16 +110,16 @@ public class CallbackTrigger
             ["oauth_verifier"] = verifier,
         };
 
+        var accessTokenUrl = apiUrl + UsosEndpoints.AccessToken;
         var key = consumerSecret + "&" + parsedResult.OAuthTokenSecret;
         query["oauth_signature"] = OAuthHelper.GetSignature(query, accessTokenUrl, key);
 
-        var accessTokenUri = accessTokenUrl + "?" + string.Join("&", query.OrderBy(x => x.Key).Select(x => $"{x.Key}={x.Value}"));
+        var accessTokenUri = accessTokenUrl + "?" + 
+            string.Join("&", query.OrderBy(x => x.Key).Select(x => $"{x.Key}={x.Value}"));
 
-        var client = _clientFactory.CreateClient(HttpClientNames.USOS);
+        var response = await client.GetAsync(accessTokenUri, cancellationToken);
 
-        var response = await client.GetAsync(accessTokenUri);
-
-        var result = await response.Content.ReadAsStringAsync();
+        var result = await response.Content.ReadAsStringAsync(cancellationToken);
 
         var parts = result.Split('&')
             .Select(x => x.Split('='))
@@ -75,13 +128,8 @@ public class CallbackTrigger
         var accessTokenResult = new OAuthResponseDto
         {
             OAuthToken = parts["oauth_token"],
-            OAuthTokenSecret = parts["oauth_token_secret"],
+            OAuthTokenSecret = parts["oauth_token_secret"]
         };
-
-        var okResponse = req.CreateResponse(HttpStatusCode.OK);
-
-        await okResponse.WriteAsJsonAsync(accessTokenResult);
-
-        return okResponse;
+        return accessTokenResult;
     }
 }

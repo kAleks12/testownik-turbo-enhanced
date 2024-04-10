@@ -13,25 +13,17 @@ public record USOSOptions
     [Required]
     public string CallbackUrl { get; init; } = default!;
     [Required]
-    public string RequestTokenUrl { get; init; } = default!;
-    [Required]
-    public string AuthorizeUrl { get; init; } = default!;
-    [Required]
-    public string AccessTokenUrl { get; init; } = default!;
+    public string ApiUrl { get; init; } = default!;
 
     public void Deconstruct(
         out string consumerKey, 
         out string consumerSecret, 
         out string callbackUrl, 
-        out string requestTokenUrl, 
-        out string authorizeUrl, 
-        out string accessTokenUrl)
+        out string apiUrl)
     {
         consumerKey = ConsumerKey;
         consumerSecret = ConsumerSecret;
         callbackUrl = CallbackUrl;
-        requestTokenUrl = RequestTokenUrl;
-        authorizeUrl = AuthorizeUrl;
-        accessTokenUrl = AccessTokenUrl;
+        apiUrl = ApiUrl;
     }
 }

@@ -35,9 +35,10 @@ public class AuthTrigger
     [Function(nameof(AuthTrigger))]
     public async Task<HttpResponseData> Run(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "auth")] 
-        HttpRequestData req)
+        HttpRequestData req,
+        CancellationToken cancellationToken)
     {
-        var (consumerKey, consumerSecret, callbackUrl, requestTokenUrl, authorizeUrl, _) = _options;
+        var (consumerKey, consumerSecret, callbackUrl, apiUrl) = _options;
 
         var query = new Dictionary<string, string>
         {
@@ -49,16 +50,18 @@ public class AuthTrigger
             ["oauth_version"] = "1.0",
         };
 
+        var requestTokenUrl = apiUrl + UsosEndpoints.RequestToken;
         var key = consumerSecret + "&";
         query["oauth_signature"] = OAuthHelper.GetSignature(query, requestTokenUrl, key);
 
-        var requestTokenUri = requestTokenUrl + "?" + string.Join("&", query.OrderBy(x => x.Key).Select(x => $"{x.Key}={x.Value}"));
+        var requestTokenUri = requestTokenUrl + "?" + 
+            string.Join("&", query.OrderBy(x => x.Key).Select(x => $"{x.Key}={x.Value}"));
 
         var client = _clientFactory.CreateClient(HttpClientNames.USOS);
 
-        var response = await client.GetAsync(requestTokenUri);
+        var response = await client.GetAsync(requestTokenUri, cancellationToken);
 
-        var result = await response.Content.ReadAsStringAsync();
+        var result = await response.Content.ReadAsStringAsync(cancellationToken);
 
         var parts = result.Split('&')
             .Select(x => x.Split('='))
@@ -73,9 +76,9 @@ public class AuthTrigger
 
         _cache.Set(CacheKeys.TokenResult, requestTokenResult);
 
-        var authorizeUri = $"{authorizeUrl}?oauth_token={requestTokenResult.OAuthToken}";
+        var authorizeUri = $"{apiUrl}{UsosEndpoints.Authorize}?oauth_token={requestTokenResult.OAuthToken}";
 
-        var redirectResponse = req.CreateResponse(HttpStatusCode.Found);
+        var redirectResponse = req.CreateResponse(HttpStatusCode.Redirect);
         redirectResponse.Headers.Add("Location", authorizeUri);
 
         return redirectResponse;
