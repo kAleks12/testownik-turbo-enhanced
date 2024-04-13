@@ -1,36 +1,20 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Reflection;
-using System.Text;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using USOSConnector.Functions.Attributes;
-using USOSConnector.Functions.Options;
+using USOSConnector.Functions.Services.JwtService;
 
 namespace USOSConnector.Middleware;
 
 public class JwtAuthorizationMiddleware : IFunctionsWorkerMiddleware
 {
-    private readonly JwtSecurityTokenHandler _tokenValidator;
-    private readonly TokenValidationParameters _tokenValidationParameters;
+    private readonly IJwtService _jwtService;
 
-    public JwtAuthorizationMiddleware(IOptions<JwtOptions> options)
+    public JwtAuthorizationMiddleware(IJwtService jwtService)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Value.Key));
-
-        _tokenValidator = new JwtSecurityTokenHandler();
-        _tokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = key
-        };
+        _jwtService = jwtService;
     }
     
     public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
@@ -72,7 +56,13 @@ public class JwtAuthorizationMiddleware : IFunctionsWorkerMiddleware
 
             var token = authHeaders.First().Split(" ").Last();
 
-            _tokenValidator.ValidateToken(token, _tokenValidationParameters, out SecurityToken validatedToken);
+            if (!_jwtService.IsTokenValid(token))
+            {
+                var response = request.CreateResponse(HttpStatusCode.Unauthorized);
+                response.WriteString("Invalid token.");
+                errorResponse = response;
+                return false;
+            }
 
             errorResponse = request.CreateResponse(HttpStatusCode.OK);
             return true;
@@ -80,7 +70,7 @@ public class JwtAuthorizationMiddleware : IFunctionsWorkerMiddleware
         catch
         {
             var response = request.CreateResponse(HttpStatusCode.Unauthorized);
-            response.WriteString("Invalid token.");
+            response.WriteString("Invalid authorization header.");
             errorResponse = response;
             return false;
         }

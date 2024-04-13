@@ -8,4 +8,6 @@ public class JwtOptions
 
     [Required]
     public string Key { get; set; } = default!;
+    [Required]
+    public int ExpiryMinutes { get; set; } = default!;
 }

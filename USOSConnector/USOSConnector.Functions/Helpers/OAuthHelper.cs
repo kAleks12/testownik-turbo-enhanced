@@ -5,18 +5,17 @@ namespace USOSConnector.Functions.Helpers;
 
 public static class OAuthHelper
 {
-    public static string GetSignature(
-        Dictionary<string, string> query, 
-        string url, 
-        string key)
+    public static string GetUri(string endpoint, string key, Dictionary<string, string> query)
     {
         var joinedParams = string.Join("&", query.OrderBy(x => x.Key).Select(x => $"{x.Key}={x.Value}"));
 
-        var signature = "GET&" + Uri.EscapeDataString(url) + "&" + Uri.EscapeDataString(joinedParams);
+        var signature = "GET&" + Uri.EscapeDataString(endpoint) + "&" + Uri.EscapeDataString(joinedParams);
 
         var hash = new HMACSHA1(Encoding.UTF8.GetBytes(key))
             .ComputeHash(Encoding.UTF8.GetBytes(signature));
 
-        return Convert.ToBase64String(hash);
+        query["oauth_signature"] = Convert.ToBase64String(hash);
+        return endpoint + "?" +
+            string.Join("&", query.OrderBy(x => x.Key).Select(x => $"{x.Key}={x.Value}"));
     }
 }
