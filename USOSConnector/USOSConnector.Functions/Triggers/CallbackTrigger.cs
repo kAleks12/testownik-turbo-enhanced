@@ -25,8 +25,8 @@ public class CallbackTrigger
         _cache = cache;
     }
 
-    [Function(nameof(CallbackTrigger))]
-    public async Task<HttpResponseData> Run(
+    [Function(nameof(Callback))]
+    public async Task<HttpResponseData> Callback(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "callback")] 
         HttpRequestData req,
         CancellationToken cancellationToken)

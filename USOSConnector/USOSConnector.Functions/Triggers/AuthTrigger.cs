@@ -28,8 +28,8 @@ public class AuthTrigger
         _logger = logger;
     }
 
-    [Function(nameof(AuthTrigger))]
-    public async Task<HttpResponseData> Run(
+    [Function(nameof(Authorize))]
+    public async Task<HttpResponseData> Authorize(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "auth")] 
         HttpRequestData req,
         CancellationToken cancellationToken)
