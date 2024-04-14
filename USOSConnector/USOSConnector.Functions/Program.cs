@@ -17,14 +17,14 @@ var host = new HostBuilder()
         services.AddOptionsWithValidation<USOSOptions>(USOSOptions.SectionName);
         services.AddOptionsWithValidation<JwtOptions>(JwtOptions.SectionName);
 
-        // Other
-        services.AddHttpClient<IUsosService>();
-        services.AddMemoryCache();
-        services.AddSingleton(TimeProvider.System);
-
         // Services
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IUsosService, UsosService>();
+
+        // Other
+        services.AddMemoryCache();
+        services.AddSingleton(TimeProvider.System);
+        services.AddHttpClient<IUsosService, UsosService>();
     })
     .Build();
 

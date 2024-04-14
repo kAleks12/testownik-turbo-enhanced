@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using USOSConnector.Functions.Constants;
 using USOSConnector.Functions.Dtos;
@@ -61,6 +60,7 @@ public class UsosService : IUsosService
             Secret = parts["oauth_token_secret"],
             RedirectUri = $"{_options.ApiUrl}{Usos.Endpoints.Authorize}?oauth_token={parts["oauth_token"]}"
         };
+        
         return requestTokenResult;
     }
 
@@ -93,6 +93,7 @@ public class UsosService : IUsosService
             Token = parts["oauth_token"],
             Secret = parts["oauth_token_secret"]
         };
+        
         return accessTokenResult;
     }
 
@@ -113,6 +114,7 @@ public class UsosService : IUsosService
             cancellationToken);
 
         var userCoursesResult = await coursesResponse.Content.ReadAsStringAsync(cancellationToken);
+
         return userCoursesResult;
     }
 
@@ -134,6 +136,7 @@ public class UsosService : IUsosService
 
         var userInfoResult = await coursesResponse.Content.ReadFromJsonAsync<UserInfoDto>(cancellationToken);
         ArgumentNullException.ThrowIfNull(userInfoResult);
+
         return userInfoResult;
     }
 
@@ -156,6 +159,7 @@ public class UsosService : IUsosService
         string coursesUri = OAuthHelper.GetUri(fullEndpoint, key, query);
 
         var response = await _httpClient.GetAsync(coursesUri, cancellationToken);
+
         return response;
     }
 }

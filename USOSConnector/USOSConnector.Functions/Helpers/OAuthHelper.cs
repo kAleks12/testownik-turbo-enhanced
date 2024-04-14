@@ -14,8 +14,8 @@ public static class OAuthHelper
         var hash = new HMACSHA1(Encoding.UTF8.GetBytes(key))
             .ComputeHash(Encoding.UTF8.GetBytes(signature));
 
-        query["oauth_signature"] = Convert.ToBase64String(hash);
-        return endpoint + "?" +
-            string.Join("&", query.OrderBy(x => x.Key).Select(x => $"{x.Key}={x.Value}"));
+        query["oauth_signature"] = Uri.EscapeDataString(Convert.ToBase64String(hash));
+        
+        return endpoint + "?" + string.Join("&", query.OrderBy(x => x.Key).Select(x => $"{x.Key}={x.Value}"));
     }
 }
