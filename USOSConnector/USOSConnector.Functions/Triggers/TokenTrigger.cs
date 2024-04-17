@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Caching.Memory;
@@ -6,16 +7,17 @@ using USOSConnector.Functions.Constants;
 using USOSConnector.Functions.Services.JwtService;
 using USOSConnector.Functions.Services.JwtService.Dtos;
 using USOSConnector.Functions.Services.UsosService;
+using USOSConnector.Functions.Triggers.Dtos;
 
 namespace USOSConnector.Functions.Triggers;
 
-public class CallbackTrigger
+public class TokenTrigger
 {
     private readonly IUsosService _usosService;
     private readonly IJwtService _jwtService;
     private readonly IMemoryCache _cache;
 
-    public CallbackTrigger(
+    public TokenTrigger(
         IUsosService usosService,
         IJwtService jwtService,
         IMemoryCache cache)
@@ -25,9 +27,9 @@ public class CallbackTrigger
         _cache = cache;
     }
 
-    [Function(nameof(Callback))]
-    public async Task<HttpResponseData> Callback(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "callback")] 
+    [Function(nameof(GetToken))]
+    public async Task<HttpResponseData> GetToken(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "token")] 
         HttpRequestData req,
         CancellationToken cancellationToken)
     {
@@ -39,14 +41,28 @@ public class CallbackTrigger
 
         if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(verifier) || string.IsNullOrEmpty(cacheKey))
         {
-            return req.CreateResponse(HttpStatusCode.BadRequest);
+            var response = req.CreateResponse(HttpStatusCode.BadRequest);
+            await response.WriteAsJsonAsync(new ProblemDetails
+            {
+                Title = "Invalid request",
+                Detail = "Token, verifier and key are required."
+            });
+
+            return response;
         }
 
         var secret = _cache.Get<string>(cacheKey);
         
         if (string.IsNullOrEmpty(secret))
         {
-            return req.CreateResponse(HttpStatusCode.BadRequest);
+            var response = req.CreateResponse(HttpStatusCode.BadRequest);
+            await response.WriteAsJsonAsync(new ProblemDetails
+            {
+                Title = "Invalid request",
+                Detail = "Invalid key."
+            });
+
+            return response;
         }
 
         var accessTokenResult = await _usosService.GetAccessTokenAsync(
@@ -77,7 +93,12 @@ public class CallbackTrigger
 
         var okResponse = req.CreateResponse(HttpStatusCode.OK);
 
-        await okResponse.WriteAsJsonAsync(new { Token = jwtToken });
+        await okResponse.WriteAsJsonAsync(new TokenResponseDto
+        { 
+            Token = jwtToken,
+            FirstName = userInfoResult.FirstName,
+            LastName = userInfoResult.LastName
+        });
 
         return okResponse;
     }

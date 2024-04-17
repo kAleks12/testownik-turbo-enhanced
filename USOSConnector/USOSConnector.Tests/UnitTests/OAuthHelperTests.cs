@@ -1,5 +1,4 @@
 using USOSConnector.Functions.Helpers;
-using Xunit.Abstractions;
 
 namespace USOSConnector.Tests.UnitTests;
 
