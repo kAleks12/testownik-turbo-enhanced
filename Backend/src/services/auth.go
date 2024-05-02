@@ -16,13 +16,17 @@ func RequireAuth(c *gin.Context) {
 	if tokenString == "" {
 		c.AbortWithStatus(http.StatusUnauthorized)
 	}
-
+	if len(tokenString) < 7 || tokenString[:7] != "Bearer " {
+		c.AbortWithStatus(http.StatusUnauthorized)
+	}
+	tokenString = tokenString[7:]
 	// Decode/validate it
+	var secret = os.Getenv("TOKEN_SECRET")
 	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(os.Getenv("token_secret")), nil
+		return []byte(secret), nil
 	})
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
