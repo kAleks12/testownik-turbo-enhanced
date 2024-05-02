@@ -1,0 +1,105 @@
+
+name: Deploy
+
+on:
+  push:
+    branches: ["master"]
+
+jobs:
+  build-and-deploy-dotnet-connector:
+    runs-on: ubuntu-latest
+    env:
+      AZURE_FUNCTIONAPP_PACKAGE_PATH: 'USOSConnector/USOSConnector.Functions'
+      AZURE_FUNCTIONAPP_NAME: 'func-pwr-testo-dev'
+
+    steps:
+    - name: Checkout GitHub Action
+      uses: actions/checkout@v3
+
+    - name: Setup DotNet 8.0.x Environment
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Resolve Project Dependencies Using Dotnet
+      run: |
+        pushd ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+        dotnet build --configuration Release --output ./output
+        popd
+
+    - name: Run Azure Functions Action
+      uses: Azure/functions-action@v1
+      with:
+        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output
+        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+
+  build-and-deploy-react-frontend:  
+    runs-on: ubuntu-latest
+    env:
+      REACT_FRONTEND_PATH: 'Frontend'
+      NOTE_VERSION: '18.x'
+
+    steps:
+    - name: Checkout GitHub Action
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js version
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NOTE_VERSION }}
+
+    - name: Install dependencies, build
+      run: |
+        pushd ${{ env.REACT_FRONTEND_PATH }}
+        npm install
+        npm run build
+        mv staticwebapp.config.json ./dist
+        popd
+      env: 
+        VITE_AUTH_LINK: ${{ secrets.VITE_AUTH_LINK}}
+        VITE_TOKEN_LINK: ${{ secrets.VITE_TOKEN_LINK}}
+
+    - name: Deploy to FunctionApp
+      uses: Azure/static-web-apps-deploy@v1
+      with:
+        azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        action: upload
+        app_location: ${{ env.REACT_FRONTEND_PATH }}/dist
+        skip_app_build: true
+
+  build-and-deploy-golang-backend:  
+    runs-on: ubuntu-latest
+    env:
+      GOLANG_BACKEND_PATH: 'Backend'
+      GOLANG_DOCKERFILE_PATH: './docker/Dockerfile'
+      CONTAIER_REGISTRY_NAME: 'crpwrtestodev'
+      REPOSITORY_NAME: 'pwr-testo-backend'
+      AZURE_WEBAPP_NAME: 'app-pwr-testo-dev'
+
+    steps:
+    - name: Checkout GitHub Action
+      uses: actions/checkout@v3
+
+    - name: Login to Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.CONTAIER_REGISTRY_NAME }}.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    - name: Build and push Docker Image
+      run: |
+        pushd '${{ env.GOLANG_BACKEND_PATH }}'
+        docker build . -f ${{ env.GOLANG_DOCKERFILE_PATH }} -t ${{ env.CONTAIER_REGISTRY_NAME }}.azurecr.io/${{ env.REPOSITORY_NAME }}:${{ github.sha }}
+        docker push ${{ env.CONTAIER_REGISTRY_NAME }}.azurecr.io/${{ env.REPOSITORY_NAME }}:${{ github.sha }}
+        popd
+
+    - name: Deploy to WebApp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        images: ${{ env.CONTAIER_REGISTRY_NAME }}.azurecr.io/${{ env.REPOSITORY_NAME }}:${{ github.sha }}
+  

@@ -18,7 +18,7 @@ const StartingPage = () => {
       </div>
       <div className="hidden bg-muted lg:block">
         <img
-          src="..\..\public\pexels-elijahsad-7711126.jpg"
+          src="/pexels-elijahsad-7711126.jpg"
           alt="Image"
           className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
           style={{ objectFit: "cover", width: "100%", height: "100%" }}
