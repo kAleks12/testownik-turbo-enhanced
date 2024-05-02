@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
 import { Atom, CircleUser, Menu, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -13,31 +13,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
-import { LocalStorageElements } from "@/shared/LocalStorageElements";
+import { useAuth } from "@/shared/hooks/auth/useAuth";
 
 const Home: React.FC = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const storedFirstName = localStorage.getItem(
-      LocalStorageElements.FirstName
-    );
-    const storedLastName = localStorage.getItem(LocalStorageElements.LastName);
-
-    if (storedFirstName) {
-      setFirstName(storedFirstName);
-    }
-
-    if (storedLastName) {
-      setLastName(storedLastName);
-    }
-  }, []);
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.clear();
-    navigate("/");
+    logout();
   };
 
   return (
@@ -119,7 +101,7 @@ const Home: React.FC = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>
-                {firstName} {lastName}
+                {user?.firstName} {user?.lastName}
               </DropdownMenuLabel>
               <Separator />
               <DropdownMenuItem onClick={handleLogout}>

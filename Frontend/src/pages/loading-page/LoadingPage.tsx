@@ -1,10 +1,11 @@
-import { AuthResponseElements } from "@/shared/AuthResponseElements";
-import { LocalStorageElements } from "@/shared/LocalStorageElements";
+import { AuthActions } from "@/shared/enums";
+import { AuthResponseElements } from "@/shared/enums/AuthResponseElements";
+import { useAuth } from "@/shared/hooks/auth/useAuth";
+import { IUser } from "@/shared/interfaces";
+import { TOKEN_LINK } from "@/shared/utils/constants";
 import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-const TOKEN_LINK = import.meta.env.VITE_TOKEN_LINK;
 
 interface IResponseTypeLogin {
   key: string | null;
@@ -20,6 +21,7 @@ interface IResponseTokenParams {
 
 const LoadingPage = () => {
   const navigate = useNavigate();
+  const { dispatchUser } = useAuth();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -42,18 +44,12 @@ const LoadingPage = () => {
           );
 
           const responseData = response.data;
-          localStorage.setItem(
-            LocalStorageElements.Token,
-            responseData.Token || ""
-          );
-          localStorage.setItem(
-            LocalStorageElements.FirstName,
-            responseData.FirstName || ""
-          );
-          localStorage.setItem(
-            LocalStorageElements.LastName,
-            responseData.LastName || ""
-          );
+          const user: IUser = {
+            token: responseData.Token || "",
+            firstName: responseData.FirstName || "",
+            lastName: responseData.LastName || "",
+          };
+          dispatchUser({ type: AuthActions.SetUser, payload: user });
           console.log(responseData);
           navigate("/home");
         } catch (error) {
@@ -64,7 +60,7 @@ const LoadingPage = () => {
       console.log(responseObj);
       getData();
     }
-  }, [navigate]);
+  }, [dispatchUser, navigate]);
 
   return <div>Oczekiwanie na pobranie danych</div>;
 };

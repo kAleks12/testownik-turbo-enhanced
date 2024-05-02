@@ -1,10 +1,10 @@
+import { useAuth } from "@/shared/hooks/auth/useAuth";
 import { Button } from "./ui/button";
 
-const AUTH_LINK = import.meta.env.VITE_AUTH_LINK;
-
 const LinkButton = () => {
+  const { login } = useAuth();
   const handleClick = () => {
-    window.open(AUTH_LINK, "_self");
+    login();
   };
 
   return <Button onClick={handleClick}>Zaloguj poprzez USOS</Button>;

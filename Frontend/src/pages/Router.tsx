@@ -4,6 +4,7 @@ import ErrorPage from "@/pages/error-page/ErrorPage.tsx";
 import StartingPage from "./starting-page/StartingPage";
 import Layout from "./layout/Layout";
 import LoadingPage from "./loading-page/LoadingPage";
+import PrivateRoute from "@/components/private-route/PrivateRoute";
 
 const Router = createBrowserRouter([
   {
@@ -17,7 +18,7 @@ const Router = createBrowserRouter([
       },
       {
         path: "/home",
-        element: <Home />,
+        element: <PrivateRoute Component={Home} />,
       },
       {
         path: "/loading",
