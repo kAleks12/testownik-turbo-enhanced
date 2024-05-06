@@ -107,6 +107,8 @@ definitions:
     type: object
   src_model_dto.FullTest:
     properties:
+      course:
+        $ref: '#/definitions/model.Course'
       id:
         type: string
       name:
@@ -647,6 +649,40 @@ paths:
       summary: Update question
       tags:
       - question
+  /api/v1/question/{id}/image:
+    post:
+      description: Add image to question by id
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/src_model_dto.BaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/src_model_dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/src_model_dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Add image to question
+      tags:
+      - image
   /api/v1/teacher:
     get:
       description: Get all teachers

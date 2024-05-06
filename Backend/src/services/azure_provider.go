@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"src/dal"
+	"strings"
 
 	"github.com/Azure/azure-storage-blob-go/azblob"
 	"github.com/gin-gonic/gin"
@@ -55,7 +56,6 @@ func newAzureProvider() (*AzureProvider, error) {
 }
 
 func (ap *AzureProvider) UploadFile(ctx *gin.Context, id uuid.UUID) error {
-
 	file, header, err := ctx.Request.FormFile("file")
 	if err != nil {
 		return err
@@ -68,11 +68,33 @@ func (ap *AzureProvider) UploadFile(ctx *gin.Context, id uuid.UUID) error {
 	}(file)
 
 	if header.Size > ap.maxFileSize {
-		ctx.JSON(400, gin.H{"error": fmt.Sprintf("file size exceeds the limit of %d bytes", ap.maxFileSize)})
+		return fmt.Errorf("file size exceeds the limit of %d bytes", ap.maxFileSize)
 	}
 
 	c := context.Background()
-	blobURL := ap.containerURL.NewBlockBlobURL(header.Filename)
+	fileNameParts := strings.Split(header.Filename, ".")
+	blobURL := ap.containerURL.NewBlockBlobURL(id.String() + "." + fileNameParts[len(fileNameParts)-1])
+
+	// Delete all blobs that start with the id
+	marker := azblob.Marker{}
+	for marker.NotDone() {
+		listBlob, err := ap.containerURL.ListBlobsFlatSegment(c, marker, azblob.ListBlobsSegmentOptions{
+			Prefix: id.String(),
+		})
+		if err != nil {
+			return err
+		}
+		marker = listBlob.NextMarker
+
+		for _, blobInfo := range listBlob.Segment.BlobItems {
+			blobURL := ap.containerURL.NewBlockBlobURL(blobInfo.Name)
+			_, err = blobURL.Delete(c, azblob.DeleteSnapshotsOptionInclude, azblob.BlobAccessConditions{})
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	_, err = azblob.UploadStreamToBlockBlob(c, file, blobURL, azblob.UploadStreamToBlockBlobOptions{
 		BufferSize: int(ap.maxFileSize),
 	})
@@ -81,7 +103,7 @@ func (ap *AzureProvider) UploadFile(ctx *gin.Context, id uuid.UUID) error {
 	}
 
 	blobURLStr := blobURL.URL().Path
-
+	blobURLStr = os.Getenv("AZURE_SA_URL") + blobURLStr
 	return dal.InsertImagePathToQuestionInDb(id, blobURLStr)
 }
 
