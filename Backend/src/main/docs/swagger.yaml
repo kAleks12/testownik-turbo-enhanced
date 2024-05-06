@@ -5,22 +5,24 @@ definitions:
         type: string
       id:
         type: string
-      question_id:
+      questionId:
         type: string
       valid:
         type: boolean
     type: object
   model.Course:
     properties:
+      courseType:
+        type: string
       id:
         type: string
       name:
         type: string
-      school_year:
-        type: integer
       teacher:
         $ref: '#/definitions/model.Teacher'
-      teacher_id:
+      teacherId:
+        type: string
+      usosId:
         type: string
     type: object
   model.Question:
@@ -33,9 +35,9 @@ definitions:
         type: string
       id:
         type: string
-      img_file:
+      imgFile:
         type: string
-      test_id:
+      testId:
         type: string
     type: object
   model.Teacher:
@@ -44,7 +46,7 @@ definitions:
         type: string
       name:
         type: string
-      second_name:
+      secondName:
         type: string
       surname:
         type: string
@@ -53,7 +55,7 @@ definitions:
     properties:
       body:
         type: string
-      question_id:
+      questionId:
         type: string
       valid:
         type: boolean
@@ -65,16 +67,42 @@ definitions:
     type: object
   src_model_dto.CourseRequest:
     properties:
+      courseType:
+        type: string
       name:
         type: string
-      school_year:
-        type: integer
-      teacher_id:
+      teacherId:
+        type: string
+      usosId:
+        type: string
+    type: object
+  src_model_dto.EditTestRequest:
+    properties:
+      courseId:
+        type: string
+      name:
+        type: string
+      schoolYear:
         type: string
     type: object
   src_model_dto.ErrorResponse:
     properties:
       error:
+        type: string
+    type: object
+  src_model_dto.FullQuestion:
+    properties:
+      answers:
+        items:
+          $ref: '#/definitions/model.Answer'
+        type: array
+      body:
+        type: string
+      id:
+        type: string
+      imgFile:
+        type: string
+      testId:
         type: string
     type: object
   src_model_dto.FullTest:
@@ -91,6 +119,17 @@ definitions:
   src_model_dto.IdResponse:
     properties:
       id:
+        type: string
+    type: object
+  src_model_dto.ListQuestion:
+    properties:
+      body:
+        type: string
+      id:
+        type: string
+      imgFile:
+        type: string
+      testId:
         type: string
     type: object
   src_model_dto.ListTest:
@@ -111,30 +150,60 @@ definitions:
         type: string
       name:
         type: string
+      schoolYear:
+        type: string
     type: object
   src_model_dto.QuestionRequest:
     properties:
+      answers:
+        items:
+          $ref: '#/definitions/src_model_dto.SubAnswer'
+        type: array
       body:
         type: string
-      img_file:
+      imgFile:
         type: string
-      test_id:
+      testId:
+        type: string
+    type: object
+  src_model_dto.SubAnswer:
+    properties:
+      body:
+        type: string
+      valid:
+        type: boolean
+    type: object
+  src_model_dto.SubQuestion:
+    properties:
+      answers:
+        items:
+          $ref: '#/definitions/src_model_dto.SubAnswer'
+        type: array
+      body:
+        type: string
+      imgFile:
         type: string
     type: object
   src_model_dto.TeacherRequest:
     properties:
       name:
         type: string
-      second_name:
+      secondName:
         type: string
       surname:
         type: string
     type: object
   src_model_dto.TestRequest:
     properties:
-      course_id:
+      courseId:
         type: string
       name:
+        type: string
+      questions:
+        items:
+          $ref: '#/definitions/src_model_dto.SubQuestion'
+        type: array
+      schoolYear:
         type: string
     type: object
 info:
@@ -443,7 +512,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.Question'
+              $ref: '#/definitions/src_model_dto.ListQuestion'
             type: array
         "500":
           description: Internal Server Error
@@ -469,7 +538,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/src_model_dto.BaseResponse'
+            $ref: '#/definitions/src_model_dto.IdResponse'
         "400":
           description: Bad Request
           schema:
@@ -526,7 +595,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Question'
+            $ref: '#/definitions/src_model_dto.FullQuestion'
         "404":
           description: Not Found
           schema:
@@ -839,7 +908,7 @@ paths:
         name: updatedTest
         required: true
         schema:
-          $ref: '#/definitions/src_model_dto.TestRequest'
+          $ref: '#/definitions/src_model_dto.EditTestRequest'
       produces:
       - application/json
       responses:

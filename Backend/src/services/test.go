@@ -40,13 +40,31 @@ func AddTestHandle(ctx *gin.Context) {
 		CreatedAt: date,
 		ChangedBy: nil,
 	}
-
-	err = dal.AddTestToDB(Test)
+	err = dal.DB.Transaction(func(tx *gorm.DB) error {
+		err = dal.AddTestToDB(Test)
+		if err != nil {
+			return err
+		}
+		for _, question := range request.Questions {
+			newQuestion := createNewQuestion(question, id)
+			err = dal.AddQuestionToDB(&newQuestion)
+			if err != nil {
+				return err
+			}
+			for _, answer := range question.Answers {
+				newAnswer := createNewAnswer(answer, newQuestion.Id)
+				err = dal.AddAnswerToDB(&newAnswer)
+				if err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	})
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-
 	ctx.JSON(200, gin.H{"id": id})
 }
 
@@ -70,7 +88,6 @@ func GetTestsHandle(ctx *gin.Context) {
 	for i, test := range tests {
 		output[i] = dto.ToListTest(test)
 	}
-
 	ctx.JSON(200, output)
 }
 
@@ -104,7 +121,7 @@ func GetTestHandle(ctx *gin.Context) {
 // @Tags         test
 // @Produce      json
 // @Param        id  path  string  true  "Test ID"
-// @Param        updatedTest body dto.TestRequest true "Payload"
+// @Param        updatedTest body dto.EditTestRequest true "Payload"
 // @Success      200  {object} dto.BaseResponse
 // @Failure   404  {object} dto.ErrorResponse
 // @Failure   500  {object} dto.ErrorResponse
@@ -112,7 +129,7 @@ func GetTestHandle(ctx *gin.Context) {
 // @Security     BearerAuth
 // @Router       /api/v1/test/{id} [put]
 func UpdateTestHandle(ctx *gin.Context) {
-	var request dto.TestRequest
+	var request dto.EditTestRequest
 	err := ctx.BindJSON(&request)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})

@@ -1,4 +1,5 @@
 using USOSConnector.Functions.Dtos;
+using USOSConnector.Functions.Services.UsosService.Dtos;
 
 namespace USOSConnector.Functions.Services.UsosService;
 
@@ -16,13 +17,17 @@ public interface IUsosService
         string secret, 
         CancellationToken cancellationToken);
 
-    // TODO Parse the response
-    Task<string> GetUserCoursesAsync(
+    Task<UserCoursesDto> GetCurrentUserCoursesAsync(
         string token, 
         string secret, 
         CancellationToken cancellationToken);
 
-    Task<UserInfoDto> GetCurrentUserAsync(
+    Task<UserTermsDto> GetCurrentUserTermsAsync(
+        string token, 
+        string secret, 
+        CancellationToken cancellationToken);
+
+    Task<UserInfoDto> GetCurrentUserInfoAsync(
         string token, 
         string secret, 
         CancellationToken cancellationToken);

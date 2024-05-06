@@ -18,6 +18,7 @@ import (
 // @name Authorization
 func main() {
 	router := gin.Default()
+	router.MaxMultipartMemory = 10 << 20
 	var defaultGroup = router.Group("api/v1")
 	services.AddTeacherHandlers(defaultGroup)
 	services.AddCourseHandlers(defaultGroup)
@@ -30,4 +31,5 @@ func main() {
 	if err != nil {
 		fmt.Println("Gin error occurred: ", err)
 	}
+
 }

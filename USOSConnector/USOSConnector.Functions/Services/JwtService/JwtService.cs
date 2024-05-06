@@ -53,9 +53,9 @@ public class JwtService : IJwtService
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, userClaims.UserId),
-            new Claim(ClaimTypes.Name, userClaims.FirstName),
-            new Claim(ClaimTypes.Surname, userClaims.LastName),
+            new Claim(CustomClaims.UsosId, userClaims.UserId),
+            new Claim(CustomClaims.FirstName, userClaims.FirstName),
+            new Claim(CustomClaims.LastName, userClaims.LastName),
             new Claim(CustomClaims.UsosToken, userClaims.UsosToken)
         };
 
@@ -69,5 +69,23 @@ public class JwtService : IJwtService
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
         return tokenHandler.WriteToken(token);
+    }
+
+    public UserClaimsDto GetUserClaims(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+
+        if (tokenHandler.ReadToken(token) is not JwtSecurityToken securityToken)
+        {
+            throw new SecurityTokenException("Invalid token.");
+        }
+
+        return new UserClaimsDto
+        {
+            UserId = securityToken.Claims.First(x => x.Type == CustomClaims.UsosId).Value,
+            FirstName = securityToken.Claims.First(x => x.Type == CustomClaims.FirstName).Value,
+            LastName = securityToken.Claims.First(x => x.Type == CustomClaims.LastName).Value,
+            UsosToken = securityToken.Claims.First(x => x.Type == CustomClaims.UsosToken).Value
+        };
     }
 }

@@ -2,13 +2,13 @@ insert into system.teacher (id, name, second_name, surname) VALUES
 ('eb247366-dee4-40dc-8610-122e937d3a21', 'Tomasz', null, 'Kapłon'),
 ('9b0942c5-1305-4be1-88e3-1b116958a8f7', 'Paweł', 'Krzysztof', 'Głuchowski');
 
-insert into system.course(id, teacher_id, school_year, name) VALUES
-('8398f4de-8604-4f61-b8f6-acc861e51eb8', 'eb247366-dee4-40dc-8610-122e937d3a21', 2019, 'Matematyka'),
-('f4b3b3b4-4b1b-4b1b-8b1b-4b1b4b1b4b1b', '9b0942c5-1305-4be1-88e3-1b116958a8f7', 2020, 'Fizyka');
+insert into system.course(id, teacher_id, name, usos_id, course_type) VALUES
+('8398f4de-8604-4f61-b8f6-acc861e51eb8', 'eb247366-dee4-40dc-8610-122e937d3a21', 'Matematyka', 'W34324fmdf', 'W'),
+('f4b3b3b4-4b1b-4b1b-8b1b-4b1b4b1b4b1b', '9b0942c5-1305-4be1-88e3-1b116958a8f7', 'Fizyka', 'Wfnjdfnskj', 'W');
 
-insert into system.test(id, course_id, created_by, name) VALUES
-('e642be08-3ebe-41e2-b442-0707a11cd168', '8398f4de-8604-4f61-b8f6-acc861e51eb8', '406304', 'Test 1'),
-('e7840c8f-0403-480e-87d8-fef94b1b6d75', 'f4b3b3b4-4b1b-4b1b-8b1b-4b1b4b1b4b1b', '406304','Test 2');
+insert into system.test(id, course_id, created_by, name, school_year) VALUES
+('e642be08-3ebe-41e2-b442-0707a11cd168', '8398f4de-8604-4f61-b8f6-acc861e51eb8', '406304', 'Test 1', '23/24'),
+('e7840c8f-0403-480e-87d8-fef94b1b6d75', 'f4b3b3b4-4b1b-4b1b-8b1b-4b1b4b1b4b1b', '406304','Test 2', '24/25');
 
 insert into system.question(id, body, img_file, test_id) VALUES
 ('3d268308-cf70-4466-9a90-f08f75223435', 'Jakiego koloru jest sławna honda type r?', null, 'e642be08-3ebe-41e2-b442-0707a11cd168'),

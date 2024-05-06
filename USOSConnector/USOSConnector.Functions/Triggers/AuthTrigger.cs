@@ -14,18 +14,15 @@ public class AuthTrigger
     private readonly IMemoryCache _cache;
     private readonly IUsosService _usosService;
     private readonly USOSOptions _options;
-    private readonly ILogger<AuthTrigger> _logger;
 
     public AuthTrigger(
         IMemoryCache cache,
         IUsosService usosService,
-        IOptions<USOSOptions> options,
-        ILogger<AuthTrigger> logger)
+        IOptions<USOSOptions> options)
     {
         _cache = cache;
         _usosService = usosService;
         _options = options.Value;
-        _logger = logger;
     }
 
     [Function(nameof(Authorize))]

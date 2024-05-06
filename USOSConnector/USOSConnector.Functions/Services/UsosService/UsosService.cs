@@ -4,6 +4,7 @@ using USOSConnector.Functions.Constants;
 using USOSConnector.Functions.Dtos;
 using USOSConnector.Functions.Helpers;
 using USOSConnector.Functions.Options;
+using USOSConnector.Functions.Services.UsosService.Dtos;
 
 namespace USOSConnector.Functions.Services.UsosService;
 
@@ -40,7 +41,7 @@ public class UsosService : IUsosService
 
         var query = new Dictionary<string, string>
         {
-            ["oauth_callback"] = Uri.EscapeDataString(clientUrl),
+            ["oauth_callback"] = Uri.EscapeDataString(clientUrl)
         };
 
         var response = await CallEndpointAsync(
@@ -73,7 +74,7 @@ public class UsosService : IUsosService
         var query = new Dictionary<string, string>
         {
             ["oauth_token"] = token,
-            ["oauth_verifier"] = verifier,
+            ["oauth_verifier"] = verifier
         };
 
         var response = await CallEndpointAsync(
@@ -97,28 +98,51 @@ public class UsosService : IUsosService
         return accessTokenResult;
     }
 
-    public async Task<string> GetUserCoursesAsync(
-        string secret, 
+    public async Task<UserCoursesDto> GetCurrentUserCoursesAsync(
         string token, 
+        string secret, 
         CancellationToken cancellationToken)
     {
         var query = new Dictionary<string, string>
         {
-            ["oauth_token"] = token,
+            ["oauth_token"] = token
         };
 
-        var coursesResponse = await CallEndpointAsync(
+        var termsResponse = await CallEndpointAsync(
             Usos.Endpoints.UserCourses,
             query,
             secret, 
             cancellationToken);
 
-        var userCoursesResult = await coursesResponse.Content.ReadAsStringAsync(cancellationToken);
+        var userCoursesResult = await termsResponse.Content.ReadFromJsonAsync<UserCoursesDto>(cancellationToken);
+        ArgumentNullException.ThrowIfNull(userCoursesResult);
 
         return userCoursesResult;
     }
 
-    public async Task<UserInfoDto> GetCurrentUserAsync(
+    public async Task<UserInfoDto> GetCurrentUserInfoAsync(
+        string token, 
+        string secret, 
+        CancellationToken cancellationToken)
+    {
+        var query = new Dictionary<string, string>
+        {
+            ["oauth_token"] = token
+        };
+
+        var userInfoResponse = await CallEndpointAsync(
+            Usos.Endpoints.UserInfo,
+            query, 
+            secret, 
+            cancellationToken);
+
+        var userInfoResult = await userInfoResponse.Content.ReadFromJsonAsync<UserInfoDto>(cancellationToken);
+        ArgumentNullException.ThrowIfNull(userInfoResult);
+
+        return userInfoResult;
+    }
+
+    public async Task<UserTermsDto> GetCurrentUserTermsAsync(
         string token, 
         string secret, 
         CancellationToken cancellationToken)
@@ -126,20 +150,21 @@ public class UsosService : IUsosService
         var query = new Dictionary<string, string>
         {
             ["oauth_token"] = token,
+            ["fields"] = "terms"
         };
 
         var coursesResponse = await CallEndpointAsync(
-            Usos.Endpoints.UserInfo,
+            Usos.Endpoints.UserCourses,
             query, 
             secret, 
             cancellationToken);
 
-        var userInfoResult = await coursesResponse.Content.ReadFromJsonAsync<UserInfoDto>(cancellationToken);
+        var userInfoResult = await coursesResponse.Content.ReadFromJsonAsync<UserTermsDto>(cancellationToken);
         ArgumentNullException.ThrowIfNull(userInfoResult);
 
         return userInfoResult;
     }
-
+    
     private async Task<HttpResponseMessage> CallEndpointAsync(
         string endpoint,
         Dictionary<string, string> query, 

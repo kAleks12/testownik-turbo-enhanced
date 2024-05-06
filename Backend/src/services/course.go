@@ -33,7 +33,8 @@ func AddCourseHandle(ctx *gin.Context) {
 		Id:         id,
 		Name:       request.Name,
 		TeacherId:  request.TeacherId,
-		SchoolYear: request.SchoolYear,
+		UsosId:     request.UsosId,
+		CourseType: request.CourseType,
 	}
 
 	err = dal.AddCourseToDB(course)
@@ -113,7 +114,8 @@ func UpdateCourseHandle(ctx *gin.Context) {
 		Id:         id,
 		Name:       request.Name,
 		TeacherId:  request.TeacherId,
-		SchoolYear: request.SchoolYear,
+		UsosId:     request.UsosId,
+		CourseType: request.CourseType,
 	}
 
 	err = dal.UpdateCourseInDB(Course)

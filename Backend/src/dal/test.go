@@ -23,7 +23,9 @@ func GetTestsFromDB() ([]model.Test, error) {
 
 func GetTestFromDB(id uuid.UUID) (*model.Test, error) {
 	var test model.Test
-	result := DB.Preload("Questions").
+	result := DB.Preload("Course").
+		Preload("Course.Teacher").
+		Preload("Questions").
 		Preload("Questions.Answers").
 		First(&test, id)
 	if result.Error != nil {

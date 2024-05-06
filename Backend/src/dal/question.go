@@ -21,7 +21,7 @@ func GetQuestionsFromDB() ([]model.Question, error) {
 
 func GetQuestionFromDB(id uuid.UUID) (*model.Question, error) {
 	var question model.Question
-	result := DB.First(&question, id)
+	result := DB.Preload("Answers").First(&question, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -35,6 +35,16 @@ func UpdateQuestionInDB(newQuestion *model.Question) error {
 		return result.Error
 	}
 	result = DB.Save(newQuestion)
+	return result.Error
+}
+func InsertImagePathToQuestionInDb(id uuid.UUID, imgFile string) error {
+	var question model.Question
+	result := DB.First(&question, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	question.ImgFile = imgFile
+	result = DB.Save(&question)
 	return result.Error
 }
 

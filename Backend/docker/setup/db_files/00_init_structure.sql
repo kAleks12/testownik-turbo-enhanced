@@ -3,6 +3,7 @@
 -- noinspection SqlCurrentSchemaInspectionForFile
 
 -- noinspection SqlCurrentSchemaInspectionForFile
+DROP SCHEMA IF EXISTS "system" CASCADE;
 CREATE SCHEMA IF NOT EXISTS "system";
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -10,19 +11,23 @@ CREATE TABLE  IF NOT EXISTS "system"."test"
 (
     "id"         uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     "name"       varchar   NOT NULL,
+    "school_year" varchar NOT NULL,
     "created_by" varchar,
     "changed_by" varchar,
     "changed_at" timestamp,
     "created_at" timestamp NOT NULL DEFAULT 'NOW()',
-    "course_id"  uuid
+    "course_id"  uuid,
+    UNIQUE (school_year, course_id)
 );
 
 CREATE TABLE IF NOT EXISTS "system"."course"
 (
     "id"          uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     "teacher_id"     uuid    NOT NULL,
-    "school_year" integer,
-    "name"        varchar NOT NULL
+    "name"        varchar NOT NULL,
+    "usos_id"   varchar NOT NULL,
+    "course_type"  varchar(1) NOT NULL,
+    UNIQUE(usos_id, course_type)
 );
 
 CREATE TABLE  IF NOT EXISTS  "system"."teacher"
@@ -47,8 +52,7 @@ CREATE TABLE IF NOT EXISTS "system"."answer"
     "id"          uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     "question_id" uuid,
     "body"        varchar NOT NULL,
-    "valid"       bool    NOT NULL,
-    UNIQUE ("body", "question_id")
+    "valid"       bool    NOT NULL
 );
 
 ALTER TABLE "system"."test"
