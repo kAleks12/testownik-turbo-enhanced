@@ -1,9 +1,9 @@
 using System.Net;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Caching.Memory;
 using USOSConnector.Functions.Constants;
+using USOSConnector.Functions.Extensions;
 using USOSConnector.Functions.Services.JwtService;
 using USOSConnector.Functions.Services.JwtService.Dtos;
 using USOSConnector.Functions.Services.UsosService;
@@ -41,28 +41,18 @@ public class TokenTrigger
 
         if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(verifier) || string.IsNullOrEmpty(cacheKey))
         {
-            var response = req.CreateResponse(HttpStatusCode.BadRequest);
-            await response.WriteAsJsonAsync(new ProblemDetails
-            {
-                Title = "Invalid request",
-                Detail = "Token, verifier and key are required."
-            });
-
-            return response;
+            return await req.CreateProblemResponseAsync(
+                HttpStatusCode.BadRequest,
+                "Token, verifier and key are required.");
         }
 
         var secret = _cache.Get<string>(cacheKey);
         
         if (string.IsNullOrEmpty(secret))
         {
-            var response = req.CreateResponse(HttpStatusCode.BadRequest);
-            await response.WriteAsJsonAsync(new ProblemDetails
-            {
-                Title = "Invalid request",
-                Detail = "Invalid key."
-            });
-
-            return response;
+            return await req.CreateProblemResponseAsync(
+                HttpStatusCode.BadRequest,
+                "Invalid key.");
         }
 
         var accessTokenResult = await _usosService.GetAccessTokenAsync(
@@ -71,7 +61,7 @@ public class TokenTrigger
             secret, 
             cancellationToken);
         
-        var userInfoResult = await _usosService.GetCurrentUserAsync(
+        var userInfoResult = await _usosService.GetCurrentUserInfoAsync(
             accessTokenResult.Token, 
             accessTokenResult.Secret, 
             cancellationToken);
