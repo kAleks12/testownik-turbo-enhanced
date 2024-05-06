@@ -7,7 +7,7 @@ import (
 
 type Answer struct {
 	Id         uuid.UUID `json:"id"`
-	QuestionId uuid.UUID `json:"question_id"`
+	QuestionId uuid.UUID `json:"questionId"`
 	Body       string    `json:"body"`
 	Valid      bool      `json:"valid"`
 }
@@ -15,34 +15,36 @@ type Answer struct {
 type Teacher struct {
 	Id         uuid.UUID `json:"id"`
 	Name       string    `json:"name"`
-	SecondName string    `json:"second_name"`
+	SecondName string    `json:"secondName"`
 	Surname    string    `json:"surname"`
 }
 
 type Course struct {
 	Id         uuid.UUID `json:"id"`
 	Name       string    `json:"name"`
-	TeacherId  uuid.UUID `json:"teacher_id"`
+	UsosId     string    `json:"usosId"`
+	CourseType string    `json:"courseType"`
+	TeacherId  uuid.UUID `json:"teacherId"`
 	Teacher    *Teacher  `json:"teacher"  gorm:"foreignKey:TeacherId"`
-	SchoolYear int       `json:"school_year"`
 }
 
 type Question struct {
 	Id      uuid.UUID `json:"id"`
 	Body    string    `json:"body"`
-	ImgFile string    `json:"img_file"`
+	ImgFile string    `json:"imgFile"`
 	Answers []Answer  `json:"answers"`
-	TestId  uuid.UUID `json:"test_id"`
+	TestId  uuid.UUID `json:"testId"`
 }
 
 type Test struct {
-	Id        uuid.UUID  `json:"id"`
-	Name      string     `json:"name"`
-	CreatedBy string     `json:"created_by"`
-	ChangedBy *string    `json:"changed_by"`
-	CreatedAt time.Time  `json:"created_at"`
-	Course    Course     `json:"course" gorm:"foreignKey:CourseId"`
-	CourseId  uuid.UUID  `json:"course_id"`
-	ChangedAt *time.Time `json:"changed_at"`
-	Questions []Question `json:"questions"`
+	Id         uuid.UUID  `json:"id"`
+	Name       string     `json:"name"`
+	CreatedBy  string     `json:"createdBy"`
+	ChangedBy  *string    `json:"changedBy"`
+	CreatedAt  time.Time  `json:"createdAt"`
+	Course     Course     `json:"course" gorm:"foreignKey:CourseId"`
+	CourseId   uuid.UUID  `json:"courseId"`
+	ChangedAt  *time.Time `json:"changedAt"`
+	Questions  []Question `json:"questions"`
+	SchoolYear string     `json:"schoolYear"`
 }

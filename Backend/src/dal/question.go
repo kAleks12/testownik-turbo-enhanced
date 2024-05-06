@@ -21,7 +21,7 @@ func GetQuestionsFromDB() ([]model.Question, error) {
 
 func GetQuestionFromDB(id uuid.UUID) (*model.Question, error) {
 	var question model.Question
-	result := DB.First(&question, id)
+	result := DB.Preload("Answers").First(&question, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
