@@ -36,7 +36,7 @@ func RequireAuth(c *gin.Context) {
 		}
 
 		// Find the user with token Subject
-		sub, exists := claims["nameid"]
+		sub, exists := claims["usos_id"]
 		if !exists {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
