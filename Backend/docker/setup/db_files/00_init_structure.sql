@@ -17,7 +17,7 @@ CREATE TABLE  IF NOT EXISTS "system"."test"
     "changed_at" timestamp,
     "created_at" timestamp NOT NULL DEFAULT 'NOW()',
     "course_id"  uuid,
-    UNIQUE (school_year, course_id)
+    UNIQUE (name, course_id)
 );
 
 CREATE TABLE IF NOT EXISTS "system"."course"
@@ -62,7 +62,7 @@ ALTER TABLE "system"."course"
     ADD FOREIGN KEY ("teacher_id") REFERENCES "system"."teacher" ("id");
 
 ALTER TABLE "system"."question"
-    ADD FOREIGN KEY ("test_id") REFERENCES "system"."test" ("id");
+    ADD FOREIGN KEY ("test_id") REFERENCES "system"."test" ("id") ON DELETE CASCADE;
 
 ALTER TABLE "system"."answer"
-    ADD FOREIGN KEY ("question_id") REFERENCES "system"."question" ("id");
+    ADD FOREIGN KEY ("question_id") REFERENCES "system"."question" ("id") ON DELETE CASCADE;

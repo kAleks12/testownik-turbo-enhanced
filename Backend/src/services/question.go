@@ -217,6 +217,9 @@ func AddImageHandle(ctx *gin.Context) {
 		if errors.As(err, &ginErr) {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "OK"})
