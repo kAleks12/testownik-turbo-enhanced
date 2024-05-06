@@ -2,9 +2,11 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
+	"net/http"
 	"src/dal"
 	"src/model"
 	"src/model/dto"
@@ -183,12 +185,50 @@ func DeleteQuestionHandle(ctx *gin.Context) {
 
 }
 
+// AddImage            godoc
+// @Summary      Add image to question
+// @Description  Add image to question by id
+// @Tags         image
+// @Produce      json
+// @Param        id  path  string  true  "Question ID"
+// @Param			file formData file true "file"
+// @Success      200  {object} dto.BaseResponse
+// @Failure  404  {object} dto.ErrorResponse
+// @Failure  500  {object} dto.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/v1/question/{id}/image [post]
+func AddImageHandle(ctx *gin.Context) {
+
+	azureProvider, err := GetAzureProviderInstance()
+	if err != nil {
+		fmt.Printf("Failed to create AzureProvider: %v\n", err)
+		return
+	}
+
+	id, err := uuid.FromString(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = azureProvider.UploadFile(ctx, id)
+	if err != nil {
+		var ginErr *gin.Error
+		if errors.As(err, &ginErr) {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "OK"})
+}
+
 func AddQuestionHandlers(router *gin.RouterGroup) {
 	var subGroup = router.Group("/question", RequireAuth)
 	subGroup.POST("", AddQuestionHandle)
 	subGroup.GET("", GetQuestionsHandle)
 	subGroup.GET(":id", GetQuestionHandle)
 	subGroup.PUT(":id", UpdateQuestionHandle)
+	subGroup.POST(":id/image", AddImageHandle)
 	subGroup.DELETE(":id", DeleteQuestionHandle)
 }
 
