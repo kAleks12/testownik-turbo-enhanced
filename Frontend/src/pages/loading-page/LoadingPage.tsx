@@ -50,7 +50,6 @@ const LoadingPage = () => {
             lastName: responseData.LastName || "",
           };
           dispatchUser({ type: AuthActions.SetUser, payload: user });
-          console.log(responseData);
           navigate("/home");
         } catch (error) {
           console.error("Error fetching data:", error);

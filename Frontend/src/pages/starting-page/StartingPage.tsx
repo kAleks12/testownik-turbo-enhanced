@@ -1,6 +1,8 @@
-import LinkButton from "@/components/link-button";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/shared/hooks/auth/useAuth";
 
 const StartingPage = () => {
+  const { login } = useAuth();
   return (
     <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
       <div className="flex items-center justify-center py-12">
@@ -12,13 +14,13 @@ const StartingPage = () => {
             </p>
           </div>
           <div className="grid gap-8 mt-4">
-            <LinkButton />
+            <Button onClick={login}>Zaloguj poprzez USOS</Button>
           </div>
         </div>
       </div>
       <div className="hidden bg-muted lg:block">
         <img
-          src="/pexels-elijahsad-7711126.jpg"
+          src="\pexels-elijahsad-7711126.jpg"
           alt="Image"
           className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
           style={{ objectFit: "cover", width: "100%", height: "100%" }}
