@@ -12,7 +12,7 @@ func AddCourseToDB(course *model.Course) error {
 
 func GetCoursesFromDB() ([]model.Course, error) {
 	var courses []model.Course
-	result := DB.Find(&courses)
+	result := DB.Preload("Teacher").Find(&courses)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -21,7 +21,7 @@ func GetCoursesFromDB() ([]model.Course, error) {
 
 func GetCourseFromDB(id uuid.UUID) (*model.Course, error) {
 	var course model.Course
-	result := DB.First(&course, id)
+	result := DB.Preload("Teacher").First(&course, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}

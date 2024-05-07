@@ -90,6 +90,19 @@ definitions:
       error:
         type: string
     type: object
+  src_model_dto.FullCourse:
+    properties:
+      courseType:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      teacher:
+        $ref: '#/definitions/model.Teacher'
+      usosId:
+        type: string
+    type: object
   src_model_dto.FullQuestion:
     properties:
       answers:
@@ -369,7 +382,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.Course'
+              $ref: '#/definitions/src_model_dto.FullCourse'
             type: array
         "500":
           description: Internal Server Error
@@ -452,7 +465,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Course'
+            $ref: '#/definitions/src_model_dto.FullCourse'
         "404":
           description: Not Found
           schema:
