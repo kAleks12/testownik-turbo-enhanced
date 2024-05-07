@@ -9,7 +9,7 @@ import { AuthAction, AuthReducer } from "./AuthReducer";
 import { IUser } from "@/shared/interfaces";
 import { AuthActions, LocalStorageElements } from "@/shared/enums";
 import { AUTH_LINK } from "@/shared/utils/constants";
-import { getStoredValue } from "../../utils/localStorageHelper";
+import LocalStorage from "../../utils/LocalStorage";
 
 interface InitialState {
   login: () => void;
@@ -26,7 +26,9 @@ export const AuthContext = createContext<InitialState>({
 });
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
-  const user = getStoredValue<IUser | undefined>(LocalStorageElements.User);
+  const user = LocalStorage.getStoredValue<IUser | undefined>(
+    LocalStorageElements.User
+  );
 
   const [state, dispatch] = useReducer(AuthReducer, user ?? undefined);
 

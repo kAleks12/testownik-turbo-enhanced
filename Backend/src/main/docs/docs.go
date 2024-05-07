@@ -265,7 +265,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.Course"
+                                "$ref": "#/definitions/src_model_dto.FullCourse"
                             }
                         }
                     },
@@ -352,7 +352,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Course"
+                            "$ref": "#/definitions/src_model_dto.FullCourse"
                         }
                     },
                     "404": {
@@ -1346,6 +1346,26 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "src_model_dto.FullCourse": {
+            "type": "object",
+            "properties": {
+                "courseType": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "teacher": {
+                    "$ref": "#/definitions/model.Teacher"
+                },
+                "usosId": {
                     "type": "string"
                 }
             }
