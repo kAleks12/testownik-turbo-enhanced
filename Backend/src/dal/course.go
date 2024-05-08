@@ -28,6 +28,17 @@ func GetCourseFromDB(id uuid.UUID) (*model.Course, error) {
 	return &course, nil
 }
 
+func GetCourseByUniqueKey(usosId string, teacherId uuid.UUID, courseType string) (*model.Course, error) {
+	var course model.Course
+	result := DB.
+		Where("usos_id = ? AND teacher_id = ? AND course_type = ?", usosId, teacherId, courseType).
+		First(&course)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &course, nil
+}
+
 func UpdateCourseInDB(newCourse *model.Course) error {
 	var course model.Course
 	result := DB.First(&course, newCourse.Id)

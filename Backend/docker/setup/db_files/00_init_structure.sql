@@ -27,15 +27,16 @@ CREATE TABLE IF NOT EXISTS "system"."course"
     "name"        varchar NOT NULL,
     "usos_id"   varchar NOT NULL,
     "course_type"  varchar(1) NOT NULL,
-    UNIQUE(usos_id, course_type)
+    UNIQUE(usos_id, course_type, teacher_id)
 );
 
 CREATE TABLE  IF NOT EXISTS  "system"."teacher"
 (
     "id"          uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     "name"        varchar NOT NULL,
-    "second_name" varchar,
-    "surname"     varchar NOT NULL
+    "second_name" varchar NOT NULL,
+    "surname"     varchar NOT NULL,
+    UNIQUE (name, second_name, surname)
 );
 
 CREATE TABLE IF NOT EXISTS "system"."question"

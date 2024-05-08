@@ -1,5 +1,5 @@
 insert into system.teacher (id, name, second_name, surname) VALUES
-('eb247366-dee4-40dc-8610-122e937d3a21', 'Tomasz', null, 'Kapłon'),
+('eb247366-dee4-40dc-8610-122e937d3a21', 'Tomasz', '', 'Kapłon'),
 ('9b0942c5-1305-4be1-88e3-1b116958a8f7', 'Paweł', 'Krzysztof', 'Głuchowski');
 
 insert into system.course(id, teacher_id, name, usos_id, course_type) VALUES

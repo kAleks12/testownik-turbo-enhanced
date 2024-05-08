@@ -92,6 +92,8 @@ definitions:
     type: object
   src_model_dto.FullCourse:
     properties:
+      active:
+        type: boolean
       courseType:
         type: string
       id:
@@ -188,17 +190,6 @@ definitions:
       valid:
         type: boolean
     type: object
-  src_model_dto.SubQuestion:
-    properties:
-      answers:
-        items:
-          $ref: '#/definitions/src_model_dto.SubAnswer'
-        type: array
-      body:
-        type: string
-      imgFile:
-        type: string
-    type: object
   src_model_dto.TeacherRequest:
     properties:
       name:
@@ -214,10 +205,6 @@ definitions:
         type: string
       name:
         type: string
-      questions:
-        items:
-          $ref: '#/definitions/src_model_dto.SubQuestion'
-        type: array
       schoolYear:
         type: string
     type: object
@@ -663,6 +650,34 @@ paths:
       tags:
       - question
   /api/v1/question/{id}/image:
+    delete:
+      description: Delete image from question by id
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/src_model_dto.BaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/src_model_dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/src_model_dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete image from question
+      tags:
+      - image
     post:
       description: Add image to question by id
       parameters:
@@ -980,6 +995,27 @@ paths:
       security:
       - BearerAuth: []
       summary: Update test
+      tags:
+      - test
+  /api/v1/test/active:
+    get:
+      description: Get all user active tests
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/src_model_dto.ListTest'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/src_model_dto.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get active tests
       tags:
       - test
 securityDefinitions:

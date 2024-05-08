@@ -107,6 +107,29 @@ func (ap *AzureProvider) UploadFile(ctx *gin.Context, id uuid.UUID) error {
 	return dal.InsertImagePathToQuestionInDb(id, blobURLStr)
 }
 
+func (ap *AzureProvider) DeleteFile(id uuid.UUID) error {
+	c := context.Background()
+	marker := azblob.Marker{}
+	for marker.NotDone() {
+		listBlob, err := ap.containerURL.ListBlobsFlatSegment(c, marker, azblob.ListBlobsSegmentOptions{
+			Prefix: id.String(),
+		})
+		if err != nil {
+			return err
+		}
+		marker = listBlob.NextMarker
+
+		for _, blobInfo := range listBlob.Segment.BlobItems {
+			blobURL := ap.containerURL.NewBlockBlobURL(blobInfo.Name)
+			_, err = blobURL.Delete(c, azblob.DeleteSnapshotsOptionInclude, azblob.BlobAccessConditions{})
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return dal.ClearImagePathFromQuestionInDb(id)
+}
+
 func getServiceURL(accountName string) url.URL {
 	serviceURL := url.URL{
 		Scheme: "https",

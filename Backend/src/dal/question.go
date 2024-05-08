@@ -48,6 +48,17 @@ func InsertImagePathToQuestionInDb(id uuid.UUID, imgFile string) error {
 	return result.Error
 }
 
+func ClearImagePathFromQuestionInDb(id uuid.UUID) error {
+	var question model.Question
+	result := DB.First(&question, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	question.ImgFile = ""
+	result = DB.Save(&question)
+	return result.Error
+}
+
 func DeleteQuestionFromDB(id uuid.UUID) error {
 	result := DB.Delete(&model.Question{}, id)
 	return result.Error
