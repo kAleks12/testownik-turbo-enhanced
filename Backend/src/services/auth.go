@@ -43,6 +43,7 @@ func RequireAuth(c *gin.Context) {
 		}
 		// Attach the request
 		c.Set("user", sub)
+		c.Set("token", "Bearer "+tokenString)
 		c.Next()
 	} else {
 		c.AbortWithStatus(http.StatusUnauthorized)

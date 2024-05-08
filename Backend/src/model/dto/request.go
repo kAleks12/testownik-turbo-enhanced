@@ -19,10 +19,9 @@ type CourseRequest struct {
 
 // Test models
 type TestRequest struct {
-	Name       string        `json:"name"`
-	CourseId   uuid.UUID     `json:"courseId"`
-	SchoolYear string        `json:"schoolYear"`
-	Questions  []SubQuestion `json:"questions"`
+	Name       string    `json:"name"`
+	CourseId   uuid.UUID `json:"courseId"`
+	SchoolYear string    `json:"schoolYear"`
 }
 
 type EditTestRequest struct {

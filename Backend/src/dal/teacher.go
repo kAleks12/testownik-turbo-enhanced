@@ -19,6 +19,17 @@ func GetTeachersFromDB() ([]model.Teacher, error) {
 	return teachers, nil
 }
 
+func GetTeacherByUniqueKey(firstName string, lastName string, secondName string) (*model.Teacher, error) {
+	var teacher model.Teacher
+	result := DB.
+		Where("name = ? AND surname = ? AND second_name = ?", firstName, lastName, secondName).
+		First(&teacher)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &teacher, nil
+}
+
 //make teacher optional
 
 func GetTeacherFromDB(id uuid.UUID) (*model.Teacher, error) {

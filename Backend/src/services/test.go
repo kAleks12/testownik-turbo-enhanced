@@ -33,34 +33,15 @@ func AddTestHandle(ctx *gin.Context) {
 	date := time.Now()
 	id, _ := uuid.NewV4()
 	Test := &model.Test{
-		Id:        id,
-		Name:      request.Name,
-		CreatedBy: createdBy,
-		CourseId:  request.CourseId,
-		CreatedAt: date,
-		ChangedBy: nil,
+		Id:         id,
+		Name:       request.Name,
+		CreatedBy:  createdBy,
+		CourseId:   request.CourseId,
+		CreatedAt:  date,
+		ChangedBy:  nil,
+		SchoolYear: request.SchoolYear,
 	}
-	err = dal.DB.Transaction(func(tx *gorm.DB) error {
-		err = dal.AddTestToDB(Test)
-		if err != nil {
-			return err
-		}
-		for _, question := range request.Questions {
-			newQuestion := createNewQuestion(question, id)
-			err = dal.AddQuestionToDB(&newQuestion)
-			if err != nil {
-				return err
-			}
-			for _, answer := range question.Answers {
-				newAnswer := createNewAnswer(answer, newQuestion.Id)
-				err = dal.AddAnswerToDB(&newAnswer)
-				if err != nil {
-					return err
-				}
-			}
-		}
-		return nil
-	})
+	err = dal.AddTestToDB(Test)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -79,6 +60,30 @@ func AddTestHandle(ctx *gin.Context) {
 // @Router       /api/v1/test [get]
 func GetTestsHandle(ctx *gin.Context) {
 	tests, err := dal.GetTestsFromDB()
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	//loop over tests and convert to listTest
+	output := make([]dto.ListTest, len(tests))
+	for i, test := range tests {
+		output[i] = dto.ToListTest(test)
+	}
+	ctx.JSON(200, output)
+}
+
+// GetActiveTests            godoc
+// @Summary      Get active tests
+// @Description  Get all user active tests
+// @Tags         test
+// @Produce      json
+// @Success      200  {array}  dto.ListTest
+// @Failure     500  {object} dto.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/v1/test/active [get]
+func GetActiveTestsHandle(ctx *gin.Context) {
+	_, activeCourses := GetActiveUserCourses(ctx)
+	tests, err := dal.GetTestsById(activeCourses)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -140,11 +145,12 @@ func UpdateTestHandle(ctx *gin.Context) {
 	changedBy := userId.(string)
 	changedAt := time.Now()
 	Test := &model.Test{
-		Id:        id,
-		Name:      request.Name,
-		ChangedBy: &changedBy,
-		CourseId:  request.CourseId,
-		ChangedAt: &changedAt,
+		Id:         id,
+		Name:       request.Name,
+		ChangedBy:  &changedBy,
+		CourseId:   request.CourseId,
+		ChangedAt:  &changedAt,
+		SchoolYear: request.SchoolYear,
 	}
 
 	err = dal.UpdateTestInDB(Test)
@@ -192,4 +198,5 @@ func AddTestHandlers(router *gin.RouterGroup) {
 	subGroup.GET(":id", GetTestHandle)
 	subGroup.PUT(":id", UpdateTestHandle)
 	subGroup.DELETE(":id", DeleteTestHandle)
+	subGroup.GET("active", GetActiveTestsHandle)
 }

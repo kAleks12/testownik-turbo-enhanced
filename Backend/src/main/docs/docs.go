@@ -753,6 +753,50 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete image from question by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "image"
+                ],
+                "summary": "Delete image from question",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Question ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/api/v1/teacher": {
@@ -1058,6 +1102,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/test/active": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get all user active tests",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "test"
+                ],
+                "summary": "Get active tests",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/src_model_dto.ListTest"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/test/{id}": {
             "get": {
                 "security": [
@@ -1353,6 +1431,9 @@ const docTemplate = `{
         "src_model_dto.FullCourse": {
             "type": "object",
             "properties": {
+                "active": {
+                    "type": "boolean"
+                },
                 "courseType": {
                     "type": "string"
                 },
@@ -1501,23 +1582,6 @@ const docTemplate = `{
                 }
             }
         },
-        "src_model_dto.SubQuestion": {
-            "type": "object",
-            "properties": {
-                "answers": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/src_model_dto.SubAnswer"
-                    }
-                },
-                "body": {
-                    "type": "string"
-                },
-                "imgFile": {
-                    "type": "string"
-                }
-            }
-        },
         "src_model_dto.TeacherRequest": {
             "type": "object",
             "properties": {
@@ -1540,12 +1604,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
-                },
-                "questions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/src_model_dto.SubQuestion"
-                    }
                 },
                 "schoolYear": {
                     "type": "string"
