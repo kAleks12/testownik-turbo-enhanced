@@ -3,6 +3,8 @@ export interface IComboboxProps<T> {
   keyPath: string;
   valuePath?: string;
   getItemValue?: (item: T) => string;
-  selectedItem: T | null;
-  onItemSelected: (value: T | null) => void;
+  getSelectedItemHeader?: (item: T) => string;
+  selectedItem: T | undefined;
+  onItemSelected: (value: T | undefined) => void;
+  required?: boolean;
 }

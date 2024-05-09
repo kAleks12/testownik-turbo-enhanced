@@ -1,57 +1,97 @@
 import React from "react";
-import Combobox from "@/components/combobox/Combobox";
 import Navbar from "@/components/navbar/Navbar";
-import { Button, Input, Label } from "@/components/ui";
-import { ICourse, IQuestion } from "@/shared/interfaces";
+import { Button, Input, Label, useToast } from "@/components/ui";
+import { ICourse, ITest } from "@/shared/interfaces";
 import { Plus } from "lucide-react";
 import EditQuestion from "./question/EditQuestion";
+import { useParams } from "react-router-dom";
+import Client from "@/api/Client";
+import CourseSelector from "@/components/course-selector/CourseSelector";
 
 const EditTest: React.FC = () => {
-  const [questions, setQuestions] = React.useState<IQuestion[]>([]);
+  const { id } = useParams<{ id: string }>();
   const [courses, setCourses] = React.useState<ICourse[]>([]);
-  const [selectedCourse, setSelectedCourse] = React.useState<ICourse | null>(
-    null
-  );
+  const [test, setTest] = React.useState<ITest>();
+
+  const { toast } = useToast();
 
   React.useEffect(() => {
-    const mock: ICourse[] = [
-      {
-        id: "1",
-        name: "Analiza matematyczna",
-        teacher: "prof. Jan Kowalski",
-      },
-      {
-        id: "2",
-        name: "Algebra liniowa",
-        teacher: "dr inż. Anna Nowak",
-      },
-    ];
-    const mockQuestions: IQuestion[] = [
-      {
-        id: "1",
-        body: "Czy 2+2=4?",
-        imgFile: "",
-        testId: "1",
-        answers: [
-          { id: "1", body: "Tak", valid: true, questionId: "1" },
-          { id: "2", body: "Nie", valid: false, questionId: "1" },
-        ],
-      },
-      {
-        id: "2",
-        body: "Czy 2+2=5?",
-        imgFile: "",
-        testId: "1",
-        answers: [
-          { id: "3", body: "Tak", valid: false, questionId: "2" },
-          { id: "4", body: "Nie", valid: true, questionId: "2" },
-        ],
-      },
-    ];
-    setCourses(mock);
-    setQuestions(mockQuestions);
-  }, []);
+    const fetchData = async () => {
+      if (id) {
+        try {
+          const testData = await Client.getTest(id);
+          const coursesData = await Client.getCourses();
+          setTest(testData);
+          console.log("Test data:", testData);
+          setCourses(coursesData);
+        } catch (error) {
+          console.error("An error occurred while fetching tests:", error);
+        }
+      }
+    };
 
+    fetchData();
+  }, [id]);
+
+  const updateTest = (courseId?: string) => {
+    if (test?.id && courseId) {
+      return Client.putTest(test.id, {
+        name: test.name ?? "",
+        courseId: courseId ?? test.course?.id ?? "",
+        schoolYear: test.schoolYear ?? "",
+      });
+    }
+  };
+
+  const handleTestNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTest({ ...test, name: event.target.value });
+  };
+
+  const handleSelectedCourseChange = (course: ICourse | undefined) => {
+    if (course?.id !== test?.course?.id && course?.id) {
+      updateTest(course?.id)?.then(() => {
+        setTest({ ...test, course: course });
+      });
+    }
+  };
+
+  const handleTestYearChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTest({ ...test, schoolYear: event.target.value });
+  };
+
+  const handleQuestionDeleted = (questionId: string) => {
+    setTest({
+      ...test,
+      questions: test?.questions?.filter((q) => q.id !== questionId),
+    });
+  };
+
+  const addNewQuestion = () => {
+    if (test?.id) {
+      if (test.questions?.find((q) => !q.body)) {
+        toast({
+          title: "Uzupełnij puste pytanie przed dodaniem nowego",
+          variant: "destructive",
+        });
+        return;
+      }
+      const newQuestion = {
+        testId: test.id,
+        body: "",
+        imgFile: "",
+        answers: [],
+      };
+      Client.postQuestion(newQuestion).then((response) => {
+        setTest({
+          ...test,
+          questions: [
+            ...(test.questions ?? []),
+            { ...newQuestion, id: response.id },
+          ],
+        });
+      });
+    }
+  };
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Navbar />
@@ -61,39 +101,39 @@ const EditTest: React.FC = () => {
         </div>
         <div>
           <Label>Nazwa testownika</Label>
-          <Input />
-        </div>
-        <div>
-          <Label>Wybierz kurs</Label>
-          <Combobox
-            items={courses}
-            selectedItem={selectedCourse}
-            onItemSelected={setSelectedCourse}
-            keyPath="id"
-            valuePath="name"
+          <Input
+            value={test?.name ?? ""}
+            onChange={handleTestNameChange}
+            required
+            onBlur={() => updateTest()}
           />
         </div>
+        <CourseSelector
+          courses={courses}
+          selectedCourse={test?.course}
+          setSelectedCourse={handleSelectedCourseChange}
+        />
         <div>
-          <Label className="text-muted-foreground">Prowadzący</Label>
+          <Label>Semestr</Label>
           <Input
-            readOnly
-            value={selectedCourse?.teacher ?? ""}
-            placeholder="Wybierz kurs żeby zobaczyć prowadzącego"
+            value={test?.schoolYear ?? ""}
+            onChange={handleTestYearChange}
           />
         </div>
         <div>
           <Label>Pytania</Label>
           <div className="grid gap-4">
-            {questions.map((question, index) => (
+            {test?.questions?.map((question, index) => (
               <EditQuestion
                 key={question.id}
                 index={index}
                 question={question}
+                onDeleted={handleQuestionDeleted}
               />
             ))}
           </div>
         </div>
-        <Button className="gap-2">
+        <Button className="gap-2" onClick={addNewQuestion}>
           <Plus className="h-5 w-5" /> Dodaj nowe pytanie
         </Button>
       </main>

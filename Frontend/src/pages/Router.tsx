@@ -29,7 +29,7 @@ const Router = createBrowserRouter([
         element: <PrivateRoute Component={AddNew} />,
       },
       {
-        path: "/edit",
+        path: "/edit/:id",
         element: <PrivateRoute Component={EditTest} />,
       },
       {
