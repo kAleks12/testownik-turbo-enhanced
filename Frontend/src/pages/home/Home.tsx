@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "@/shared/hooks/auth/useAuth";
 import Navbar from "@/components/navbar/Navbar";
 import { NavbarPages } from "@/shared/enums";
-import TestCard from "./test-card/TestCard";
+import TestCard from "../../components/test-card/TestCard";
 import Client from "@/api/Client";
 import { ITest } from "@/shared/interfaces";
 
@@ -14,7 +14,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const testsData = await Client.getTests();
+        const testsData = await Client.getActiveTests();
         console.log("Tests data:", testsData);
 
         setTests(testsData);
@@ -25,6 +25,10 @@ const Home: React.FC = () => {
 
     fetchData();
   }, []);
+
+  const handleDeleted = (id: string) => {
+    setTests(tests.filter((test) => test.id !== id));
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -38,10 +42,10 @@ const Home: React.FC = () => {
             Zacznij się uczyć (najlepiej tak z dzień przed kolosem)
           </p>
         </div>
-        <div className="text-2xl">Dostępne testowniki</div>
+        <div className="text-2xl">Dostępne testowniki na ten semestr</div>
         <div className="grid gap-4 md:grid-cols-2">
           {tests.map((test) => (
-            <TestCard key={test.id} test={test} />
+            <TestCard key={test.id} test={test} onDeleted={handleDeleted} />
           ))}
         </div>
       </main>

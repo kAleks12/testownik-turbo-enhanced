@@ -32,6 +32,8 @@ const Combobox = <T,>(props: IComboboxProps<T>) => {
     keyPath,
     valuePath,
     getItemValue,
+    getSelectedItemHeader: getSelectedItemValue,
+    required,
   } = props;
   const [open, setOpen] = React.useState(false);
   const [itemsSource, setItemsSource] = React.useState<IComboboxItem[]>([]);
@@ -45,9 +47,12 @@ const Combobox = <T,>(props: IComboboxProps<T>) => {
   );
 
   const getValue = React.useCallback(
-    (item: T | null): string => {
+    (item: T | undefined, selected = false): string => {
       if (!item) {
         return "";
+      }
+      if (selected && getSelectedItemValue) {
+        return getSelectedItemValue(item) ?? "";
       }
       if (getItemValue) {
         return getItemValue(item) ?? "";
@@ -58,12 +63,12 @@ const Combobox = <T,>(props: IComboboxProps<T>) => {
       }
       throw new Error("getItemValue or valuePath must be provided.");
     },
-    [getItemValue, valuePath]
+    [getItemValue, getSelectedItemValue, valuePath]
   );
 
   const onSelect = (selectedKey: string) => {
     const selectedValue = items.find((item) => getKey(item) === selectedKey);
-    onItemSelected(selectedValue ?? null);
+    onItemSelected(selectedValue ?? undefined);
     setOpen(false);
   };
 
@@ -81,7 +86,7 @@ const Combobox = <T,>(props: IComboboxProps<T>) => {
   }, [getKey, getValue, items, keyPath]);
 
   React.useEffect(() => {
-    setSelectedValue(getValue(selectedItem) ?? "");
+    setSelectedValue(getValue(selectedItem, true) ?? "");
   }, [getValue, selectedItem]);
 
   return (
@@ -91,7 +96,10 @@ const Combobox = <T,>(props: IComboboxProps<T>) => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className={cn(
+            "w-full justify-between",
+            required && !selectedItem && "border-red-500 border-2"
+          )}
         >
           {selectedValue || "Select value..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

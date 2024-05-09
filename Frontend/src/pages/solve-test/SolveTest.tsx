@@ -1,6 +1,6 @@
 import React from "react";
 import Navbar from "@/components/navbar/Navbar";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { IAnswearSolved, IQuestion, ITest } from "@/shared/interfaces";
 import { deepCopy, shuffle } from "@/shared/utils/helpers";
 import SolveQuestion from "./solve-question/SolveQuestion";
@@ -10,6 +10,7 @@ import Client from "@/api/Client";
 
 const SolveTest: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
   const [test, setTest] = React.useState<ITest>();
   const [questionsToSolve, setQuestionsToSolve] = React.useState<IQuestion[]>(
@@ -86,18 +87,25 @@ const SolveTest: React.FC = () => {
     setSolvedQuestions([]);
   };
 
+  const goHome = () => {
+    navigate("/home");
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Navbar />
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="flex items-center justify-center">
-          <div className="flex flex-row gap-8  w-[550px] justify-between">
+          <div className="flex flex-row flex-grow gap-8 justify-between">
+            <div className="grow" />
             <div className="font-semibold leading-none tracking-tight text-2xl ">
               {test?.name}
             </div>
+            <div className="grow" />
             <div className="text-primary font-bold leading-none text-2xl">
               {test?.course?.name}&nbsp;({test?.course?.courseType})
             </div>
+            <div className="grow" />
           </div>
         </div>
         {currentQuestion && (
@@ -113,8 +121,11 @@ const SolveTest: React.FC = () => {
               {solvedQuestions.map((question) => (
                 <QuestionSummary key={question.id} question={question} />
               ))}
-              <div className="flex flex-row">
+              <div className="flex flex-row gap-2">
                 <div className="grow"></div>
+                <Button variant="secondary" onClick={goHome}>
+                  Wróć do widoku głównego
+                </Button>
                 <Button onClick={handleRefresh}>
                   Rozwiąż test jeszcze raz
                 </Button>
