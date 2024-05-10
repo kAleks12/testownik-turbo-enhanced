@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Client from "@/api/Client";
 
 const EditQuestion = (props: IEditQuestionProps) => {
-  const { question: questProps, index, onDeleted } = props;
+  const { question: questProps, index, onDeleted, onUpdated } = props;
   const [question, setQuestion] = React.useState(questProps);
   React.useEffect(() => {
     setQuestion(questProps);
@@ -34,7 +34,9 @@ const EditQuestion = (props: IEditQuestionProps) => {
 
   const updateQuestion = () => {
     if (question.id) {
-      Client.putQuestion(question.id, question);
+      Client.putQuestion(question.id, question).then(() => {
+        onUpdated(question);
+      });
     }
   };
 

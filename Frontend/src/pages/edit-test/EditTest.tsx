@@ -1,7 +1,7 @@
 import React from "react";
 import Navbar from "@/components/navbar/Navbar";
 import { Button, Input, Label, useToast } from "@/components/ui";
-import { ICourse, ITest } from "@/shared/interfaces";
+import { ICourse, IQuestion, ITest } from "@/shared/interfaces";
 import { Plus } from "lucide-react";
 import EditQuestion from "./question/EditQuestion";
 import { useParams } from "react-router-dom";
@@ -34,7 +34,7 @@ const EditTest: React.FC = () => {
   }, [id]);
 
   const updateTest = (courseId?: string) => {
-    if (test?.id && courseId) {
+    if (test?.id && (courseId || test.course?.id)) {
       return Client.putTest(test.id, {
         name: test.name ?? "",
         courseId: courseId ?? test.course?.id ?? "",
@@ -57,6 +57,15 @@ const EditTest: React.FC = () => {
 
   const handleTestYearChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTest({ ...test, schoolYear: event.target.value });
+  };
+
+  const handleQuestionUpdated = (question: IQuestion) => {
+    setTest({
+      ...test,
+      questions: test?.questions?.map((q) =>
+        q.id === question.id ? question : q
+      ),
+    });
   };
 
   const handleQuestionDeleted = (questionId: string) => {
@@ -118,6 +127,7 @@ const EditTest: React.FC = () => {
           <Input
             value={test?.schoolYear ?? ""}
             onChange={handleTestYearChange}
+            onBlur={() => updateTest()}
           />
         </div>
         <div>
@@ -128,6 +138,7 @@ const EditTest: React.FC = () => {
                 key={question.id}
                 index={index}
                 question={question}
+                onUpdated={handleQuestionUpdated}
                 onDeleted={handleQuestionDeleted}
               />
             ))}
