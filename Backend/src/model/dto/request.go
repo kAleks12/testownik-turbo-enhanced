@@ -55,11 +55,13 @@ type AnswerRequest struct {
 	QuestionId uuid.UUID `json:"questionId"`
 	Body       string    `json:"body"`
 	Valid      bool      `json:"valid"`
+	ImgFile    string    `json:"imgFile"`
 }
 
 type SubAnswer struct {
-	Body  string `json:"body"`
-	Valid bool   `json:"valid"`
+	Body    string `json:"body"`
+	Valid   bool   `json:"valid"`
+	ImgFile string `json:"imgFile"`
 }
 
 type EditSubAnswer struct {

@@ -42,3 +42,25 @@ func DeleteAnswerFromDB(id uuid.UUID) error {
 	result := DB.Delete(&model.Answer{}, id)
 	return result.Error
 }
+
+func InsertImagePathToAnswerInDb(id uuid.UUID, imgFile string) error {
+	var answer model.Answer
+	result := DB.First(&answer, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	answer.ImgFile = imgFile
+	result = DB.Save(&answer)
+	return result.Error
+}
+
+func ClearImagePathFromAnswerInDb(id uuid.UUID) error {
+	var answer model.Answer
+	result := DB.First(&answer, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	answer.ImgFile = ""
+	result = DB.Save(&answer)
+	return result.Error
+}

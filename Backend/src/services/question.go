@@ -12,7 +12,7 @@ import (
 	"src/model/dto"
 )
 
-// AddQuestion            godoc
+// AddQuestionHandle            godoc
 // @Summary      Add question
 // @Description  Add question from json body
 // @Tags         question
@@ -58,7 +58,7 @@ func AddQuestionHandle(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"id": id})
 }
 
-// GetQuestions            godoc
+// GetQuestionsHandle            godoc
 // @Summary      Get questions
 // @Description  Get all questions
 // @Tags         question
@@ -82,7 +82,7 @@ func GetQuestionsHandle(ctx *gin.Context) {
 	ctx.JSON(200, output)
 }
 
-// GetQuestion            godoc
+// GetQuestionHandle            godoc
 // @Summary      Get question
 // @Description  Get question by id
 // @Tags         question
@@ -106,7 +106,7 @@ func GetQuestionHandle(ctx *gin.Context) {
 	ctx.JSON(200, dto.ToFullQuestion(*question))
 }
 
-// UpdateQuestion            godoc
+// UpdateQuestionHandle            godoc
 // @Summary      Update question
 // @Description  Update question by id
 // @Tags         question
@@ -159,7 +159,7 @@ func UpdateQuestionHandle(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"id": id})
 }
 
-// DeleteQuestion            godoc
+// DeleteQuestionHandle            godoc
 // @Summary      Delete question
 // @Description  Delete question by id
 // @Tags         question
@@ -185,7 +185,7 @@ func DeleteQuestionHandle(ctx *gin.Context) {
 
 }
 
-// AddImage            godoc
+// AddImageHandle            godoc
 // @Summary      Add image to question
 // @Description  Add image to question by id
 // @Tags         image
@@ -198,7 +198,6 @@ func DeleteQuestionHandle(ctx *gin.Context) {
 // @Security     BearerAuth
 // @Router       /api/v1/question/{id}/image [post]
 func AddImageHandle(ctx *gin.Context) {
-
 	azureProvider, err := GetAzureProviderInstance()
 	if err != nil {
 		fmt.Printf("Failed to create AzureProvider: %v\n", err)
@@ -211,7 +210,7 @@ func AddImageHandle(ctx *gin.Context) {
 		return
 	}
 
-	err = azureProvider.UploadFile(ctx, id)
+	err = azureProvider.UploadFile(ctx, id, dal.InsertImagePathToQuestionInDb)
 	if err != nil {
 		var ginErr *gin.Error
 		if errors.As(err, &ginErr) {
@@ -225,7 +224,7 @@ func AddImageHandle(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "OK"})
 }
 
-// AddImage            godoc
+// DeleteImageHandle            godoc
 // @Summary      Delete image from question
 // @Description  Delete image from question by id
 // @Tags         image
@@ -249,7 +248,7 @@ func DeleteImageHandle(ctx *gin.Context) {
 		return
 	}
 
-	err = azureProvider.DeleteFile(id)
+	err = azureProvider.DeleteFile(id, dal.ClearImagePathFromQuestionInDb)
 	if err != nil {
 		var ginErr *gin.Error
 		if errors.As(err, &ginErr) {

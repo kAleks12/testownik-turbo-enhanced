@@ -9,6 +9,7 @@ type Answer struct {
 	Id         uuid.UUID `json:"id"`
 	QuestionId uuid.UUID `json:"questionId"`
 	Body       string    `json:"body"`
+	ImgFile    string    `json:"imgFile"`
 	Valid      bool      `json:"valid"`
 }
 

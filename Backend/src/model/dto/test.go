@@ -32,17 +32,19 @@ func ToListTest(test model.Test) ListTest {
 }
 
 type FullTest struct {
-	Id        uuid.UUID        `json:"id"`
-	Name      string           `json:"name"`
-	Questions []model.Question `json:"questions"`
-	Course    model.Course     `json:"course"`
+	Id         uuid.UUID        `json:"id"`
+	Name       string           `json:"name"`
+	Questions  []model.Question `json:"questions"`
+	Course     model.Course     `json:"course"`
+	SchoolYear string           `json:"schoolYear"`
 }
 
 func ToFullTest(test model.Test) FullTest {
 	return FullTest{
-		Id:        test.Id,
-		Name:      test.Name,
-		Questions: test.Questions,
-		Course:    test.Course,
+		Id:         test.Id,
+		Name:       test.Name,
+		Questions:  test.Questions,
+		Course:     test.Course,
+		SchoolYear: test.SchoolYear,
 	}
 }

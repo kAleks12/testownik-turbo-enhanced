@@ -10,7 +10,7 @@ import (
 	"src/model/dto"
 )
 
-// AddCourse            godoc
+// AddCourseHandle            godoc
 // @Summary      Add course
 // @Description  Add course from json body
 // @Tags         course
@@ -46,7 +46,7 @@ func AddCourseHandle(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"id": id})
 }
 
-// GetCourses            godoc
+// GetCoursesHandle            godoc
 // @Summary      Get courses
 // @Description  Get all courses
 // @Tags         course
@@ -70,7 +70,7 @@ func GetCoursesHandle(ctx *gin.Context) {
 	ctx.JSON(200, output)
 }
 
-// GetCourse            godoc
+// GetCourseHandle            godoc
 // @Summary      Get course
 // @Description  Get course by id
 // @Tags         course
@@ -96,7 +96,7 @@ func GetCourseHandle(ctx *gin.Context) {
 	ctx.JSON(200, dto.ToFullCourse(*course, active))
 }
 
-// UpdateCourse            godoc
+// UpdateCourseHandle            godoc
 // @Summary      Update course
 // @Description  Update course by id
 // @Tags         course
@@ -137,7 +137,7 @@ func UpdateCourseHandle(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"message": "OK"})
 }
 
-// DeleteCourse            godoc
+// DeleteCourseHandle            godoc
 // @Summary      Delete course
 // @Description  Delete course by id
 // @Tags         course

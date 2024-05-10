@@ -7,7 +7,6 @@ import (
 	"mime/multipart"
 	"net/url"
 	"os"
-	"src/dal"
 	"strings"
 
 	"github.com/Azure/azure-storage-blob-go/azblob"
@@ -55,7 +54,8 @@ func newAzureProvider() (*AzureProvider, error) {
 	}, nil
 }
 
-func (ap *AzureProvider) UploadFile(ctx *gin.Context, id uuid.UUID) error {
+func (ap *AzureProvider) UploadFile(ctx *gin.Context, id uuid.UUID,
+	callback func(id uuid.UUID, path string) error) error {
 	file, header, err := ctx.Request.FormFile("file")
 	if err != nil {
 		return err
@@ -104,10 +104,28 @@ func (ap *AzureProvider) UploadFile(ctx *gin.Context, id uuid.UUID) error {
 
 	blobURLStr := blobURL.URL().Path
 	blobURLStr = os.Getenv("AZURE_SA_URL") + blobURLStr
-	return dal.InsertImagePathToQuestionInDb(id, blobURLStr)
+	return callback(id, blobURLStr)
 }
 
-func (ap *AzureProvider) DeleteFile(id uuid.UUID) error {
+func (ap *AzureProvider) UploadFileDirect(file multipart.File, filename string, id uuid.UUID,
+	callback func(id uuid.UUID, path string) error) error {
+	c := context.Background()
+	fileNameParts := strings.Split(filename, ".")
+	blobURL := ap.containerURL.NewBlockBlobURL(id.String() + "." + fileNameParts[len(fileNameParts)-1])
+
+	_, err := azblob.UploadStreamToBlockBlob(c, file, blobURL, azblob.UploadStreamToBlockBlobOptions{
+		BufferSize: int(ap.maxFileSize),
+	})
+	if err != nil {
+		return err
+	}
+
+	blobURLStr := blobURL.URL().Path
+	blobURLStr = os.Getenv("AZURE_SA_URL") + blobURLStr
+	return callback(id, blobURLStr)
+}
+
+func (ap *AzureProvider) DeleteFile(id uuid.UUID, callback func(id uuid.UUID) error) error {
 	c := context.Background()
 	marker := azblob.Marker{}
 	for marker.NotDone() {
@@ -127,7 +145,7 @@ func (ap *AzureProvider) DeleteFile(id uuid.UUID) error {
 			}
 		}
 	}
-	return dal.ClearImagePathFromQuestionInDb(id)
+	return callback(id)
 }
 
 func getServiceURL(accountName string) url.URL {

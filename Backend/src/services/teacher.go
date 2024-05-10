@@ -10,7 +10,7 @@ import (
 	"src/model/dto"
 )
 
-// AddTeacher            godoc
+// AddTeacherHandle            godoc
 // @Summary      Add teacher
 // @Description  Add teacher from json body
 // @Tags         teacher
@@ -45,7 +45,7 @@ func AddTeacherHandle(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"id": id})
 }
 
-// GetTeachers            godoc
+// GetTeachersHandle            godoc
 // @Summary      Get teachers
 // @Description  Get all teachers
 // @Tags         teacher
@@ -64,7 +64,7 @@ func GetTeachersHandle(ctx *gin.Context) {
 	ctx.JSON(200, teachers)
 }
 
-// GetTeacher            godoc
+// GetTeacherHandle            godoc
 // @Summary      Get teacher
 // @Description  Get teacher by id
 // @Tags         teacher
@@ -88,14 +88,14 @@ func GetTeacherHandle(ctx *gin.Context) {
 	ctx.JSON(200, teacher)
 }
 
-// UpdateTeacher  godoc
+// UpdateTeacherHandle  godoc
 // @Summary  Update teacher
 // @Description  Update teacher by id
 // @Tags   teacher
 // @Produce      json
 // @Param        id  path  string  true  "Teacher ID"
 //
-//	@Param	updatedTeacher	body		dto.TeacherRequest	true "Payload"
+//	@Param	updatedTeacher	body dto.TeacherRequest	true "Payload"
 //
 // @Success      200  {object} dto.BaseResponse
 // @Failure    404  {object} dto.ErrorResponse
@@ -130,7 +130,7 @@ func UpdateTeacherHandle(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"message": "OK"})
 }
 
-// DeleteTeacher            godoc
+// DeleteTeacherHandle            godoc
 // @Summary      Delete teacher
 // @Description  Delete teacher by id
 // @Tags         teacher
