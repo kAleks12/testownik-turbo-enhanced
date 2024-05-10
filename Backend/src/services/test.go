@@ -184,6 +184,12 @@ func UpdateTestHandle(ctx *gin.Context) {
 // @Router       /api/v1/test/{id} [delete]
 func DeleteTestHandle(ctx *gin.Context) {
 	id, err := uuid.FromString(ctx.Param("id"))
+	ap, err := GetAzureProviderInstance()
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	err = ap.DeleteFiles(id.String())
 	err = dal.DeleteTestFromDB(id)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		ctx.JSON(404, gin.H{"Record not found with id": id})
@@ -192,7 +198,6 @@ func DeleteTestHandle(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
 	ctx.JSON(200, gin.H{"message": "OK"})
 }
 
@@ -264,6 +269,7 @@ func ImportTestHandle(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+	ctx.JSON(200, gin.H{"id": testId})
 }
 
 func AddTestHandlers(router *gin.RouterGroup) {
@@ -318,7 +324,7 @@ func processQuestion(path string, testId uuid.UUID, ap *AzureProvider) error {
 			return err
 		}
 		if pictureName != "" {
-			err = handleQuestionImage(path, pictureName, ap, questionModel)
+			err = handleQuestionImage(path, pictureName, ap, questionModel, testId)
 			if err != nil {
 				return err
 			}
@@ -339,7 +345,7 @@ func processQuestion(path string, testId uuid.UUID, ap *AzureProvider) error {
 				return err
 			}
 			if pictureName != "" {
-				err = handleAnswerImage(path, pictureName, ap, answerModel)
+				err = handleAnswerImage(path, pictureName, ap, answerModel, testId, questionModel.Id)
 				if err != nil {
 					return err
 				}
@@ -349,28 +355,28 @@ func processQuestion(path string, testId uuid.UUID, ap *AzureProvider) error {
 	})
 }
 
-func handleQuestionImage(path string, pictureName string, ap *AzureProvider, questionModel model.Question) error {
+func handleQuestionImage(path string, pictureName string, ap *AzureProvider, questionModel model.Question, testId uuid.UUID) error {
 	dir := filepath.Dir(path)
 	picturePath := dir + "\\" + pictureName
 	file, err := os.Open(picturePath)
 	if err != nil {
 		return err
 	}
-	err = ap.UploadFileDirect(file, pictureName, questionModel.Id, dal.InsertImagePathToQuestionInDb)
+	err = ap.UploadFileDirect(file, pictureName, testId, questionModel.Id, nil, dal.InsertImagePathToQuestionInDb)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func handleAnswerImage(path string, pictureName string, ap *AzureProvider, answerModel model.Answer) error {
+func handleAnswerImage(path string, pictureName string, ap *AzureProvider, answerModel model.Answer, testId uuid.UUID, questionId uuid.UUID) error {
 	dir := filepath.Dir(path)
 	picturePath := dir + "\\" + pictureName
 	file, err := os.Open(picturePath)
 	if err != nil {
 		return err
 	}
-	err = ap.UploadFileDirect(file, pictureName, answerModel.Id, dal.InsertImagePathToAnswerInDb)
+	err = ap.UploadFileDirect(file, pictureName, testId, questionId, &answerModel.Id, dal.InsertImagePathToAnswerInDb)
 	if err != nil {
 		return err
 	}

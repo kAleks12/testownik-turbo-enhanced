@@ -172,6 +172,18 @@ func UpdateQuestionHandle(ctx *gin.Context) {
 // @Router       /api/v1/question/{id} [delete]
 func DeleteQuestionHandle(ctx *gin.Context) {
 	id, err := uuid.FromString(ctx.Param("id"))
+	ap, err := GetAzureProviderInstance()
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	prefix, err := buildQuestionImagePrefix(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err = ap.DeleteFiles(*prefix)
+
 	err = dal.DeleteQuestionFromDB(id)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		ctx.JSON(404, gin.H{"Record not found with id": id})
@@ -203,14 +215,17 @@ func AddImageHandle(ctx *gin.Context) {
 		fmt.Printf("Failed to create AzureProvider: %v\n", err)
 		return
 	}
-
 	id, err := uuid.FromString(ctx.Param("id"))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	err = azureProvider.UploadFile(ctx, id, dal.InsertImagePathToQuestionInDb)
+	testId, err := getQuestionPrefixData(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err = azureProvider.UploadFile(ctx, *testId, id, nil, dal.InsertImagePathToQuestionInDb)
 	if err != nil {
 		var ginErr *gin.Error
 		if errors.As(err, &ginErr) {
@@ -248,7 +263,13 @@ func DeleteImageHandle(ctx *gin.Context) {
 		return
 	}
 
-	err = azureProvider.DeleteFile(id, dal.ClearImagePathFromQuestionInDb)
+	prefix, err := buildQuestionImagePrefix(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = azureProvider.DeleteFilesCallback(*prefix, id, dal.ClearImagePathFromQuestionInDb)
 	if err != nil {
 		var ginErr *gin.Error
 		if errors.As(err, &ginErr) {
@@ -325,4 +346,22 @@ func handleAnswers(existingQuestion *model.Question, existingAnswers []model.Ans
 		}
 		return nil
 	})
+}
+
+func buildQuestionImagePrefix(id uuid.UUID) (*string, error) {
+	question, err := dal.GetQuestionFromDB(id)
+	if err != nil {
+		return nil, err
+	}
+	prefix := question.TestId.String() + "_" + question.Id.String()
+	return &prefix, nil
+}
+
+func getQuestionPrefixData(id uuid.UUID) (*uuid.UUID, error) {
+	question, err := dal.GetQuestionFromDB(id)
+	if err != nil {
+		return nil, err
+	}
+	testId := question.TestId
+	return &testId, nil
 }
