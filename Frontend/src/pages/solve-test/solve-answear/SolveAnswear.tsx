@@ -7,9 +7,15 @@ const SolveAnswear = (props: ISolveAnswearProps) => {
   const [answearStyle, setAnswearStyle] = React.useState("");
 
   const handleClick = () => {
+    if (revealed) {
+      return;
+    }
     if (!answear.selected) {
       setAnswearStyle("bg-gray-300");
       answear.selected = true;
+    } else {
+      setAnswearStyle("");
+      answear.selected = false;
     }
   };
 
