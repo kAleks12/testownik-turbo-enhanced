@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 import { useAuth } from "@/shared/hooks/auth/useAuth";
 import Navbar from "@/components/navbar/Navbar";
-import { NavbarPages } from "@/shared/enums";
 import TestCard from "../../components/test-card/TestCard";
 import Client from "@/api/Client";
 import { ITest } from "@/shared/interfaces";
@@ -32,7 +31,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <Navbar page={NavbarPages.Home} />
+      <Navbar />
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="grid gap-2 text-center">
           <div className="text-4xl">

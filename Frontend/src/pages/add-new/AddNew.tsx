@@ -1,6 +1,5 @@
 import Navbar from "@/components/navbar/Navbar";
 import { Button } from "@/components/ui";
-import { NavbarPages } from "@/shared/enums";
 import React from "react";
 import AddManual from "./add-manual/AddManual";
 import { ICourse } from "@/shared/interfaces";
@@ -24,7 +23,7 @@ const AddNew: React.FC = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <Navbar page={NavbarPages.AddNew} />
+      <Navbar />
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[550px] gap-6">
           <div className="grid gap-2 text-center">

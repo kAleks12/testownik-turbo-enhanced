@@ -1,16 +1,15 @@
 import React from "react";
 import Navbar from "@/components/navbar/Navbar";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { IAnswearSolved, IQuestion, ITest } from "@/shared/interfaces";
 import { deepCopy, shuffle } from "@/shared/utils/helpers";
 import SolveQuestion from "./solve-question/SolveQuestion";
 import QuestionSummary from "./question-summary/QuestionSummary";
-import { Button } from "@/components/ui";
+import { Button, LinkButton } from "@/components/ui";
 import Client from "@/api/Client";
 
 const SolveTest: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
 
   const [test, setTest] = React.useState<ITest>();
   const [questionsToSolve, setQuestionsToSolve] = React.useState<IQuestion[]>(
@@ -87,10 +86,6 @@ const SolveTest: React.FC = () => {
     setSolvedQuestions([]);
   };
 
-  const goHome = () => {
-    navigate("/home");
-  };
-
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Navbar />
@@ -123,9 +118,9 @@ const SolveTest: React.FC = () => {
               ))}
               <div className="flex flex-row gap-2">
                 <div className="grow"></div>
-                <Button variant="secondary" onClick={goHome}>
+                <LinkButton href="/home" variant="secondary">
                   Wróć do widoku głównego
-                </Button>
+                </LinkButton>
                 <Button onClick={handleRefresh}>
                   Rozwiąż test jeszcze raz
                 </Button>

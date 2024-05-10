@@ -5,15 +5,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  LinkButton,
 } from "@/components/ui";
 import { EllipsisVertical, PencilLine, Trash } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import Client from "@/api/Client";
 import { ITestCardOptionsProps } from "./ITestCardOptionsProps";
 
 const TestCardOptions = (props: ITestCardOptionsProps) => {
   const { testId, onDeleted } = props;
-  const navigate = useNavigate();
 
   const handleDelete = () => {
     Client.deleteTest(testId).then(() => {
@@ -21,9 +20,8 @@ const TestCardOptions = (props: ITestCardOptionsProps) => {
     });
   };
 
-  const editTest = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const editTest = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.stopPropagation();
-    navigate(`/edit/${testId}`);
   };
 
   const deleteTest = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -41,12 +39,17 @@ const TestCardOptions = (props: ITestCardOptionsProps) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem>
-          <Button className="h-5" variant="ghost" onClick={editTest}>
+          <LinkButton
+            href={`/edit/${testId}`}
+            variant="ghost"
+            className="h-5"
+            onClick={editTest}
+          >
             <div className="flex flex-row gap-2 align-center justify-center">
               <PencilLine className="h-4 w-4" />
               Edytuj
             </div>
-          </Button>
+          </LinkButton>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Button className="h-5" variant="ghost" onClick={deleteTest}>

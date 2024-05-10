@@ -1,18 +1,17 @@
-import { Atom, Menu, Search } from "lucide-react";
-import { Link } from "react-router-dom";
-import { Input } from "../ui/input";
+import { Atom, Menu } from "lucide-react";
+import { Link, matchPath, useLocation } from "react-router-dom";
 import UserMenu from "./menu/UserMenu";
-import { INavbarProps } from "./INavbarProps";
-import { NavbarPages } from "@/shared/enums";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
 
-const Navbar = (props: INavbarProps) => {
-  const { page } = props;
+const Navbar = () => {
+  const location = useLocation();
+  const routes = ["/home", "/search", "/add-new"];
+  const baseRoute = routes.find((r) => matchPath(location.pathname, r));
 
-  const getTextForeground = (check: NavbarPages) => {
-    if (page && check === page) {
+  const getTextForeground = (page: string) => {
+    if (baseRoute === page) {
       return "text-foreground";
     }
 
@@ -27,25 +26,25 @@ const Navbar = (props: INavbarProps) => {
         <Link
           to="/home"
           className={cn(
-            getTextForeground(NavbarPages.Home),
+            getTextForeground("/home"),
             "transition-colors hover:text-foreground whitespace-nowrap"
           )}
         >
           Strona główna
         </Link>
         <Link
-          to="/search-course"
+          to="/search"
           className={cn(
-            getTextForeground(NavbarPages.SearchCourse),
+            getTextForeground("/search"),
             "transition-colors hover:text-foreground whitespace-nowrap"
           )}
         >
-          Wyszukaj kurs
+          Wyszukaj testownik
         </Link>
         <Link
           to="/add-new"
           className={cn(
-            getTextForeground(NavbarPages.AddNew),
+            getTextForeground("/add-new"),
             "transition-colors hover:text-foreground whitespace-nowrap"
           )}
         >
@@ -65,25 +64,25 @@ const Navbar = (props: INavbarProps) => {
             <Link
               to="/home"
               className={cn(
-                getTextForeground(NavbarPages.Home),
+                getTextForeground("/home"),
                 "transition-colors hover:text-foreground whitespace-nowrap"
               )}
             >
               Strona główna
             </Link>
             <Link
-              to="/search-course"
+              to="/search"
               className={cn(
-                getTextForeground(NavbarPages.SearchCourse),
+                getTextForeground("/search"),
                 "transition-colors hover:text-foreground whitespace-nowrap"
               )}
             >
-              Wyszukaj kurs
+              Wyszukaj test
             </Link>
             <Link
               to="/add-new"
               className={cn(
-                getTextForeground(NavbarPages.AddNew),
+                getTextForeground("/add-new"),
                 "transition-colors hover:text-foreground whitespace-nowrap"
               )}
             >
@@ -93,16 +92,7 @@ const Navbar = (props: INavbarProps) => {
         </SheetContent>
       </Sheet>
       <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-        <form className="ml-auto flex-1 sm:flex-initial">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search ..."
-              className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
-            />
-          </div>
-        </form>
+        <div className="ml-auto flex-1 sm:flex-initial"></div>
         <UserMenu />
       </div>
     </header>
