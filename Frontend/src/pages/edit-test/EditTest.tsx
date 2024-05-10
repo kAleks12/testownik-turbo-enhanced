@@ -121,6 +121,7 @@ const EditTest: React.FC = () => {
           courses={courses}
           selectedCourse={test?.course}
           setSelectedCourse={handleSelectedCourseChange}
+          dropdownWidth="1200px"
         />
         <div>
           <Label>Semestr</Label>

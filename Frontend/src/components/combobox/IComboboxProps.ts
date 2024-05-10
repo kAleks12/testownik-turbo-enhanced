@@ -1,4 +1,6 @@
-export interface IComboboxProps<T> {
+import { IComboboxGroup } from "./IComboboxGroup";
+
+export interface IComboboxProps<T, K> {
   items: T[];
   keyPath: string;
   valuePath?: string;
@@ -6,5 +8,8 @@ export interface IComboboxProps<T> {
   getSelectedItemHeader?: (item: T) => string;
   selectedItem: T | undefined;
   onItemSelected: (value: T | undefined) => void;
+  groupPath?: string;
+  groups?: IComboboxGroup<K>[];
+  dropdownWidth?: string;
   required?: boolean;
 }

@@ -1,10 +1,11 @@
 import { ICourse } from "@/shared/interfaces";
-import Combobox from "../combobox/Combobox";
 import { Input, Label } from "../ui";
 import { ICourseSelectorProps } from "./ICourseSelectorProps";
+import { nameof } from "ts-simple-nameof";
+import Combobox from "../combobox/Combobox";
 
 const CourseSelector = (props: ICourseSelectorProps) => {
-  const { courses, selectedCourse, setSelectedCourse } = props;
+  const { courses, selectedCourse, setSelectedCourse, dropdownWidth } = props;
 
   const getCourseString = (course: ICourse) => {
     return `${course.name} ${course.courseType} (${course.teacher.name} ${course.teacher.surname})`;
@@ -21,9 +22,18 @@ const CourseSelector = (props: ICourseSelectorProps) => {
           items={courses}
           selectedItem={selectedCourse}
           onItemSelected={setSelectedCourse}
-          keyPath="id"
+          keyPath={nameof<ICourse>((c) => c.id)}
           getItemValue={getCourseString}
           getSelectedItemHeader={getCourseHeader}
+          groupPath={nameof<ICourse>((c) => c.active)}
+          groups={[
+            { groupValue: true, header: "Aktualne kursy" },
+            {
+              groupValue: false,
+              header: "Pozostałe itniejące wśród testowników",
+            },
+          ]}
+          dropdownWidth={dropdownWidth}
           required
         />
       </div>

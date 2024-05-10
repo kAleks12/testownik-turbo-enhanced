@@ -91,6 +91,7 @@ const AddManual = (props: IAddManualProps) => {
             courses={courses}
             selectedCourse={selectedCourse}
             setSelectedCourse={handleSelectedCourseChange}
+            dropdownWidth="400px"
           />
           <div>
             <Label>Semestr</Label>

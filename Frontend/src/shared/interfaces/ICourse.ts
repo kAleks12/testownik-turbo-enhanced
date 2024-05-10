@@ -7,4 +7,5 @@ export interface ICourse {
   usosId: string;
   teacherId: string;
   teacher: ITeacher;
+  active?: boolean;
 }
