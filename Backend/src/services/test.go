@@ -3,6 +3,7 @@ package services
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
 	"golang.org/x/text/encoding/charmap"
@@ -14,6 +15,7 @@ import (
 	"src/model"
 	"src/model/dto"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -288,18 +290,47 @@ func processArchive(path string, testId uuid.UUID) error {
 	if err != nil {
 		return err
 	}
-	return filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+	// Create a new WaitGroup
+	var wg sync.WaitGroup
+
+	// Use a buffered channel to limit the number of concurrent goroutines
+	sem := make(chan struct{}, 10) // Change 10 to the number of concurrent goroutines you want
+
+	err = filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 		if !info.IsDir() {
 			ext := strings.ToLower(filepath.Ext(info.Name()))
 			if ext == ".txt" {
-				err = processQuestion(path, testId, ap)
+				// Increment the WaitGroup counter
+				wg.Add(1)
+
+				// Acquire a token
+				sem <- struct{}{}
+
+				// Launch a goroutine to process the question
+				go func(path string) {
+					// Decrement the WaitGroup counter when the goroutine completes
+					defer wg.Done()
+
+					// Release a token when the goroutine completes
+					defer func() { <-sem }()
+
+					err := processQuestion(path, testId, ap)
+					if err != nil {
+						fmt.Println("Error processing question:", err)
+					}
+				}(path)
 			}
 		}
 		return nil
 	})
+
+	// Wait for all goroutines to complete
+	wg.Wait()
+
+	return err
 }
 
 func processQuestion(path string, testId uuid.UUID, ap *AzureProvider) error {
@@ -332,7 +363,8 @@ func processQuestion(path string, testId uuid.UUID, ap *AzureProvider) error {
 		for index, answer := range answers {
 			pictureName = ""
 			if strings.HasPrefix(answer, "[img]") {
-				pictureName = answer[5 : len(answer)-6]
+				end := strings.LastIndex(answer, "[/img]")
+				pictureName = answer[5:end]
 				answer = ""
 			}
 			answerModel := createNewAnswer(dto.SubAnswer{
@@ -396,9 +428,8 @@ func readQuestionAttr(path string) ([]string, *string, *string, error) {
 	answers := make([]string, 0)
 	for scanner.Scan() {
 		line := scanner.Text()
-
 		if questionConfig == "" && !strings.HasPrefix(line, "X") {
-			return nil, nil, nil, errors.New("invalid question file format - missing question config")
+			return nil, nil, nil, errors.New("invalid file format - missing config for question:" + path)
 		} else if questionConfig == "" {
 			questionConfig = line[1:]
 			continue
