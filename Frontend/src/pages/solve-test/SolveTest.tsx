@@ -116,7 +116,7 @@ const SolveTest: React.FC = () => {
               {solvedQuestions.map((question) => (
                 <QuestionSummary key={question.id} question={question} />
               ))}
-              <div className="flex flex-row gap-2">
+              <div className="flex flex-col md:flex-row gap-2">
                 <div className="grow"></div>
                 <LinkButton href="/home" variant="secondary">
                   Wróć do widoku głównego

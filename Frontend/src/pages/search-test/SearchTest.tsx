@@ -83,7 +83,7 @@ const SearchCourse: React.FC = () => {
             I skończ wreszcie udawać że się uczysz
           </p>
         </div>
-        <div className="flex flex-row gap-4">
+        <div className="flex flex-col md:flex-row gap-4">
           <div className="grow">
             <Label>Nazwa testo</Label>
             <div className="relative">

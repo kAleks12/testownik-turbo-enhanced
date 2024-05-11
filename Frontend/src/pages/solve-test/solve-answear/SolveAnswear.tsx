@@ -11,7 +11,7 @@ const SolveAnswear = (props: ISolveAnswearProps) => {
       return;
     }
     if (!answear.selected) {
-      setAnswearStyle("bg-gray-300");
+      setAnswearStyle("bg-gray-300 dark:bg-gray-700");
       answear.selected = true;
     } else {
       setAnswearStyle("");
@@ -22,7 +22,7 @@ const SolveAnswear = (props: ISolveAnswearProps) => {
   React.useEffect(() => {
     if (!revealed) {
       if (answear.selected) {
-        setAnswearStyle("bg-gray-300");
+        setAnswearStyle("bg-gray-300 dark:bg-gray-700");
         return;
       }
       setAnswearStyle("");
@@ -30,14 +30,14 @@ const SolveAnswear = (props: ISolveAnswearProps) => {
     }
     if (answear.valid) {
       if (answear.selected) {
-        setAnswearStyle("bg-green-700");
+        setAnswearStyle("bg-green-700 dark:bg-green-900");
         return;
       }
-      setAnswearStyle("bg-green-500");
+      setAnswearStyle("bg-green-500 dark:bg-green-800");
       return;
     }
     if (answear.selected && !answear.valid) {
-      setAnswearStyle("bg-red-500");
+      setAnswearStyle("bg-red-500 dark:bg-red-800");
       return;
     }
     setAnswearStyle("");
@@ -49,7 +49,9 @@ const SolveAnswear = (props: ISolveAnswearProps) => {
         "p-2 border border-gray-300 rounded-lg shadow-md transition ease-in-out delay-200",
         !small && "text-2xl p-4",
         answearStyle,
-        !revealed && !answear.selected && "cursor-pointer hover:bg-gray-200"
+        !revealed &&
+          !answear.selected &&
+          "cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-900"
       )}
       onClick={handleClick}
     >

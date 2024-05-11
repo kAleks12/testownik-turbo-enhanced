@@ -33,15 +33,18 @@ const Home: React.FC = () => {
     <div className="flex min-h-screen w-full flex-col">
       <Navbar />
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <div className="grid gap-2 text-center">
+        <div className="grid gap-2 text-center py-4">
           <div className="text-4xl">
             Cześć, {user?.firstName} {user?.lastName}
           </div>
-          <p className="text-balance text-muted-foreground">
-            Zacznij się uczyć (najlepiej tak z dzień przed kolosem)
-          </p>
+          <div className="flex flex-col md:flex-row mx-auto text-center text-balance text-muted-foreground">
+            <p>Zacznij się uczyć&nbsp;</p>
+            <p>(najlepiej tak z dzień przed kolosem)</p>
+          </div>
         </div>
-        <div className="text-2xl">Dostępne testowniki na ten semestr</div>
+        <div className="text-xl md:text-2xl">
+          Dostępne testowniki na ten semestr:
+        </div>
         <div className="grid gap-4 md:grid-cols-2">
           {tests.map((test) => (
             <TestCard key={test.id} test={test} onDeleted={handleDeleted} />

@@ -27,16 +27,15 @@ const TestCard = (props: ITestCardProps) => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-column gap-2">
-            <div className="text-primary font-bold">{test.course?.name}</div>
-            <div className="text-muted-foreground italic">
-              {test.course?.courseType}
-            </div>
-            {test.schoolYear && (
-              <div className="text-muted-foreground italic">
-                (Semestr: {test.schoolYear})
-              </div>
-            )}
+            <p className="text-primary font-bold">{test.course?.name}</p>
+            <p className="italic">{test.course?.courseType}</p>
           </div>
+          {test.schoolYear && (
+            <div className="flex flex-row">
+              <p className="text-muted-foreground italic">Semestr:&nbsp;</p>
+              <p>{test.schoolYear}</p>
+            </div>
+          )}
           <div className="flex flex-row">
             <p className="text-muted-foreground italic">Prowadzący:&nbsp;</p>
             <p>

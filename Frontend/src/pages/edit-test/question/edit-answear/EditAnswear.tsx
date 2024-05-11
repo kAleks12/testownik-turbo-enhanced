@@ -38,7 +38,7 @@ const EditAnswear = (props: IEditAnswearProps) => {
     }
   };
   return (
-    <div className="flex flex-row content-center gap-3 px-2 py-1 rounded hover:bg-gray-200">
+    <div className="flex flex-row content-center gap-3 px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-800">
       <Checkbox
         checked={answear.valid ?? false}
         onClick={handleValidChange}
