@@ -176,6 +176,15 @@ definitions:
       schoolYear:
         type: string
     type: object
+  src_model_dto.LogResponse:
+    properties:
+      id:
+        type: string
+      logs:
+        items:
+          type: string
+        type: array
+    type: object
   src_model_dto.QuestionRequest:
     properties:
       answers:
@@ -1117,7 +1126,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/src_model_dto.IdResponse'
+            $ref: '#/definitions/src_model_dto.LogResponse'
         "400":
           description: Bad Request
           schema:

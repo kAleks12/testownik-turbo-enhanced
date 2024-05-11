@@ -208,7 +208,7 @@ func DeleteTestHandle(ctx *gin.Context) {
 // @Description  Import test from zip file
 // @Tags         test
 // @Produce      json
-// @Success      200  {object} dto.IdResponse
+// @Success      200  {object} dto.LogResponse
 // @Failure     400  {object} dto.ErrorResponse
 // @Failure     500  {object} dto.ErrorResponse
 // @Param			file formData file true "file"
@@ -265,13 +265,18 @@ func ImportTestHandle(ctx *gin.Context) {
 		return
 	}
 	*archiveDest += "//" + fileNameParts[0]
-	err = processArchive(*archiveDest, testId)
-
+	logs, err := processArchive(*archiveDest, testId)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(200, gin.H{"id": testId})
+	//delete temp folder
+	err = os.RemoveAll(*archiveDest)
+	response := dto.LogResponse{
+		IdResponse: dto.IdResponse{Id: testId},
+		Logs:       logs,
+	}
+	ctx.JSON(200, response)
 }
 
 func AddTestHandlers(router *gin.RouterGroup) {
@@ -285,16 +290,14 @@ func AddTestHandlers(router *gin.RouterGroup) {
 	subGroup.POST("import", ImportTestHandle)
 }
 
-func processArchive(path string, testId uuid.UUID) error {
+func processArchive(path string, testId uuid.UUID) ([]string, error) {
 	ap, err := GetAzureProviderInstance()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	// Create a new WaitGroup
+	logs := make([]string, 0)
 	var wg sync.WaitGroup
-
-	// Use a buffered channel to limit the number of concurrent goroutines
-	sem := make(chan struct{}, 10) // Change 10 to the number of concurrent goroutines you want
+	sem := make(chan struct{}, 10)
 
 	err = filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -317,26 +320,26 @@ func processArchive(path string, testId uuid.UUID) error {
 					// Release a token when the goroutine completes
 					defer func() { <-sem }()
 
-					err := processQuestion(path, testId, ap)
+					log, err := processQuestion(path, testId, ap)
 					if err != nil {
 						fmt.Println("Error processing question:", err)
+					}
+					if log != "" {
+						logs = append(logs, log)
 					}
 				}(path)
 			}
 		}
 		return nil
 	})
-
-	// Wait for all goroutines to complete
 	wg.Wait()
-
-	return err
+	return logs, err
 }
 
-func processQuestion(path string, testId uuid.UUID, ap *AzureProvider) error {
+func processQuestion(path string, testId uuid.UUID, ap *AzureProvider) (string, error) {
 	answers, questionConfig, body, err := readQuestionAttr(path)
 	if err != nil {
-		return err
+		return err.Error(), err
 	}
 	var pictureName = ""
 	if strings.HasPrefix(*body, "[img]") {
@@ -349,7 +352,7 @@ func processQuestion(path string, testId uuid.UUID, ap *AzureProvider) error {
 		ImgFile: "",
 	}
 	questionModel := createNewQuestion(subQuestion, testId)
-	return dal.DB.Transaction(func(tx *gorm.DB) error {
+	err = dal.DB.Transaction(func(tx *gorm.DB) error {
 		err = dal.AddQuestionToDB(&questionModel)
 		if err != nil {
 			return err
@@ -385,11 +388,22 @@ func processQuestion(path string, testId uuid.UUID, ap *AzureProvider) error {
 		}
 		return nil
 	})
+	if err != nil {
+		if strings.Contains(err.Error(), "open") {
+			pathStart := strings.LastIndex(err.Error(), "open") + 5
+			pathEnd := strings.LastIndex(err.Error(), ":")
+			rawPath := err.Error()[pathStart:pathEnd]
+			filename := filepath.Base(rawPath)
+			return strings.Replace(err.Error(), rawPath, filename, 1), err
+		}
+		return err.Error(), err
+	}
+	return "", err
 }
 
 func handleQuestionImage(path string, pictureName string, ap *AzureProvider, questionModel model.Question, testId uuid.UUID) error {
 	dir := filepath.Dir(path)
-	picturePath := dir + "\\" + pictureName
+	picturePath := filepath.Join(dir, pictureName)
 	file, err := os.Open(picturePath)
 	if err != nil {
 		return err
@@ -403,7 +417,7 @@ func handleQuestionImage(path string, pictureName string, ap *AzureProvider, que
 
 func handleAnswerImage(path string, pictureName string, ap *AzureProvider, answerModel model.Answer, testId uuid.UUID, questionId uuid.UUID) error {
 	dir := filepath.Dir(path)
-	picturePath := dir + "\\" + pictureName
+	picturePath := filepath.Join(dir, pictureName)
 	file, err := os.Open(picturePath)
 	if err != nil {
 		return err
@@ -429,7 +443,8 @@ func readQuestionAttr(path string) ([]string, *string, *string, error) {
 	for scanner.Scan() {
 		line := scanner.Text()
 		if questionConfig == "" && !strings.HasPrefix(line, "X") {
-			return nil, nil, nil, errors.New("invalid file format - missing config for question:" + path)
+			filename := filepath.Base(path)
+			return nil, nil, nil, errors.New("invalid file format - missing config for question: " + filename)
 		} else if questionConfig == "" {
 			questionConfig = line[1:]
 			continue

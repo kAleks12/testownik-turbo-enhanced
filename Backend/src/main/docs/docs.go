@@ -1281,7 +1281,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/src_model_dto.IdResponse"
+                            "$ref": "#/definitions/src_model_dto.LogResponse"
                         }
                     },
                     "400": {
@@ -1720,6 +1720,20 @@ const docTemplate = `{
                 },
                 "schoolYear": {
                     "type": "string"
+                }
+            }
+        },
+        "src_model_dto.LogResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "logs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

@@ -44,7 +44,7 @@ func containsAnswer(answers []model.Answer, answer model.Answer) bool {
 
 func UnzipArchive(file multipart.File, header *multipart.FileHeader) (*string, error) {
 	// Create a temporary directory to unzip the archive
-	tempDir := "C://users//kacpe//desktop"
+	tempDir := filepath.Join(os.TempDir(), "temp-"+uuid.Must(uuid.NewV4()).String())
 
 	// Create a new zip reader from the file
 	zipReader, err := zip.NewReader(file, header.Size)
