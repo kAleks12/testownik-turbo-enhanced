@@ -30,7 +30,7 @@ const CourseSelector = (props: ICourseSelectorProps) => {
             { groupValue: true, header: "Aktualne kursy" },
             {
               groupValue: false,
-              header: "Pozostałe itniejące wśród testowników",
+              header: "Pozostałe istniejące wśród testowników",
             },
           ]}
           dropdownWidth={dropdownWidth}

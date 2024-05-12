@@ -8,4 +8,5 @@ export * from "./IAnswearSolved";
 export * from "./IAnswearUpdate";
 export * from "./ITeacher";
 export * from "./ITestUpdate";
-export * from "./IIdResponse";
+export * from "./IResponseId";
+export * from "./IResponseUrl";

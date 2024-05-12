@@ -62,6 +62,23 @@ const EditQuestion = (props: IEditQuestionProps) => {
     }
   };
 
+  const handleImgChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      Client.postQuestionImage(question.id, file).then((response) => {
+        setQuestion({ ...question, imgFile: response.url });
+      });
+    }
+  };
+
+  const handleDeleteImg = () => {
+    if (question.id) {
+      Client.deleteQuestionImage(question.id).then(() => {
+        setQuestion({ ...question, imgFile: "" });
+      });
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -84,13 +101,14 @@ const EditQuestion = (props: IEditQuestionProps) => {
         <div>
           <Label>Obrazek</Label>
           {question.imgFile ? (
-            <img
-              src={question.imgFile}
-              alt="question"
-              className="w-1/2 m-auto"
-            />
+            <div className="flex flex-row justify-center">
+              <img src={question.imgFile} alt="question" className="w-1/2" />
+              <Button variant={"ghost"} onClick={handleDeleteImg}>
+                <Trash className="h-4 w-4" />
+              </Button>
+            </div>
           ) : (
-            <Input type="file" accept="image/*" />
+            <Input type="file" accept="image/*" onChange={handleImgChange} />
           )}
         </div>
         <div>

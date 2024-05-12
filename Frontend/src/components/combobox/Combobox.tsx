@@ -137,7 +137,7 @@ const Combobox = <T, K>(props: IComboboxProps<T, K>) => {
             required && !selectedItem && "border-red-500 border-2"
           )}
         >
-          {selectedValue || "Select value..."}
+          {selectedValue || "Wybierz z listy..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -146,7 +146,7 @@ const Combobox = <T, K>(props: IComboboxProps<T, K>) => {
         style={{ width: dropdownWidth ?? "300px" }}
       >
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder="Wyszukaj..." />
           <CommandEmpty>No item found.</CommandEmpty>
           <CommandList>
             {groups

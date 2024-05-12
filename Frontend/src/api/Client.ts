@@ -6,10 +6,11 @@ import { LocalStorageElements, StatusCodes } from "@/shared/enums";
 import {
   IAnswearUpdate,
   ICourse,
-  IIdResponse,
+  IResponseId,
   IQuestionUpdate,
   ITestUpdate,
   IUser,
+  IResponseUrl,
 } from "@/shared/interfaces";
 
 axios.interceptors.request.use((setup) => {
@@ -45,13 +46,13 @@ axios.interceptors.response.use(
         window.location.href = "/";
         break;
 
-      case StatusCodes.Gone:
-        window.location.href = "/not-found";
-        break;
+      // case StatusCodes.Gone:
+      //   window.location.href = "/not-found";
+      //   break;
 
-      case StatusCodes.InternalServerError:
-        window.location.href = "/server-error";
-        break;
+      // case StatusCodes.InternalServerError:
+      //   window.location.href = "/server-error";
+      //   break;
 
       default:
         break;
@@ -72,10 +73,26 @@ const Client = {
     axios
       .get<ITest>(`${DEFAULT_EP}/test/${testId}`)
       .then((response) => response.data),
-  postTest: async (test: ITest) =>
+  postTest: async (test: ITestUpdate) =>
     axios
-      .post<IIdResponse>(`${DEFAULT_EP}/test`, test)
+      .post<IResponseId>(`${DEFAULT_EP}/test`, test)
       .then((response) => response.data),
+  postTestZipFile: async (test: ITestUpdate, file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return axios
+      .post<IResponseId>(
+        `${DEFAULT_EP}/test/import?testName=${test.name}&courseId=${test.courseId}${test.schoolYear && "&schoolYear=" + test.schoolYear}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((response) => response.data);
+  },
   putTest: async (testId: string, test: ITestUpdate) =>
     axios
       .put(`${DEFAULT_EP}/test/${testId}`, test)
@@ -86,11 +103,11 @@ const Client = {
       .then((response) => response.data),
   postQuestion: async (question: IQuestionUpdate) =>
     axios
-      .post<IIdResponse>(`${DEFAULT_EP}/question`, question)
+      .post<IResponseId>(`${DEFAULT_EP}/question`, question)
       .then((response) => response.data),
   putQuestion: async (questionId: string, question: IQuestionUpdate) =>
     axios
-      .put<IIdResponse>(`${DEFAULT_EP}/question/${questionId}`, question)
+      .put<IResponseId>(`${DEFAULT_EP}/question/${questionId}`, question)
       .then((response) => response.data),
   deleteQuestion: async (questionId: string) =>
     axios
@@ -98,11 +115,11 @@ const Client = {
       .then((response) => response.data),
   postAnswear: async (answear: IAnswearUpdate) =>
     axios
-      .post<IIdResponse>(`${DEFAULT_EP}/answer`, answear)
+      .post<IResponseId>(`${DEFAULT_EP}/answer`, answear)
       .then((response) => response.data),
   putAnswear: async (answearId: string, answear: IAnswearUpdate) =>
     axios
-      .put<IIdResponse>(`${DEFAULT_EP}/answer/${answearId}`, answear)
+      .put<IResponseId>(`${DEFAULT_EP}/answer/${answearId}`, answear)
       .then((response) => response.data),
   deleteAnswear: async (answearId: string) =>
     axios
@@ -111,6 +128,26 @@ const Client = {
   getCourses: async () =>
     axios
       .get<ICourse[]>(`${DEFAULT_EP}/course`)
+      .then((response) => response.data),
+  postQuestionImage: async (questionId: string, image: File) => {
+    const formData = new FormData();
+    formData.append("file", image);
+
+    return axios
+      .post<IResponseUrl>(
+        `${DEFAULT_EP}/question/${questionId}/image`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((response) => response.data);
+  },
+  deleteQuestionImage: async (questionId: string) =>
+    axios
+      .delete(`${DEFAULT_EP}/question/${questionId}/image`)
       .then((response) => response.data),
 };
 

@@ -38,7 +38,7 @@ const Home: React.FC = () => {
             Cześć, {user?.firstName} {user?.lastName}
           </div>
           <div className="flex flex-col md:flex-row mx-auto text-center text-balance text-muted-foreground">
-            <p>Zacznij się uczyć&nbsp;</p>
+            <p>Zacznij się uczyć </p>
             <p>(najlepiej tak z dzień przed kolosem)</p>
           </div>
         </div>

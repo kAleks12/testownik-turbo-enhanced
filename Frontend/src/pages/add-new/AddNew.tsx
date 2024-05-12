@@ -1,7 +1,6 @@
-import Navbar from "@/components/navbar/Navbar";
-import { Button } from "@/components/ui";
 import React from "react";
-import AddManual from "./add-manual/AddManual";
+import Navbar from "@/components/navbar/Navbar";
+import AddNewPopup from "./add-new-popup/AddNewPopup";
 import { ICourse } from "@/shared/interfaces";
 import Client from "@/api/Client";
 
@@ -33,9 +32,9 @@ const AddNew: React.FC = () => {
             </p>
           </div>
           <div className="grid gap-4 mt-4">
-            <Button>Dodaj z plików</Button>
+            <AddNewPopup courses={courses} manual={false} />
             {/* <Button>Dodaj ze zdjęć (OCR)</Button> */}
-            <AddManual courses={courses} />
+            <AddNewPopup courses={courses} manual />
           </div>
         </div>
       </main>
