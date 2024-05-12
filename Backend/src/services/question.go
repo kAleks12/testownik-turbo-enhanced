@@ -204,7 +204,7 @@ func DeleteQuestionHandle(ctx *gin.Context) {
 // @Produce      json
 // @Param        id  path  string  true  "Question ID"
 // @Param			file formData file true "file"
-// @Success      200  {object} dto.BaseResponse
+// @Success      200  {object} dto.UrlResponse
 // @Failure  404  {object} dto.ErrorResponse
 // @Failure  500  {object} dto.ErrorResponse
 // @Security     BearerAuth
@@ -225,7 +225,7 @@ func AddImageHandle(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err = azureProvider.UploadFile(ctx, *testId, id, nil, dal.InsertImagePathToQuestionInDb)
+	url, err := azureProvider.UploadFile(ctx, *testId, id, nil, dal.InsertImagePathToQuestionInDb)
 	if err != nil {
 		var ginErr *gin.Error
 		if errors.As(err, &ginErr) {
@@ -236,7 +236,7 @@ func AddImageHandle(ctx *gin.Context) {
 			return
 		}
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "OK"})
+	ctx.JSON(http.StatusOK, gin.H{"url": url})
 }
 
 // DeleteImageHandle            godoc

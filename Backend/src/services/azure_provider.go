@@ -55,10 +55,10 @@ func newAzureProvider() (*AzureProvider, error) {
 }
 
 func (ap *AzureProvider) UploadFile(ctx *gin.Context, testId uuid.UUID, questionId uuid.UUID, answerId *uuid.UUID,
-	callback func(id uuid.UUID, path string) error) error {
+	callback func(id uuid.UUID, path string) error) (*string, error) {
 	file, header, err := ctx.Request.FormFile("file")
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer func(file multipart.File) {
 		err := file.Close()
@@ -68,23 +68,28 @@ func (ap *AzureProvider) UploadFile(ctx *gin.Context, testId uuid.UUID, question
 	}(file)
 
 	if header.Size > ap.maxFileSize {
-		return fmt.Errorf("file size exceeds the limit of %d bytes", ap.maxFileSize)
+		return nil, fmt.Errorf("file size exceeds the limit of %d bytes", ap.maxFileSize)
 	}
 
 	c := context.Background()
 	blobURL := buildFile(header, testId, questionId, answerId, ap)
 	err = cleanupOldFiles(testId, questionId, answerId, ap, c)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	_, err = azblob.UploadStreamToBlockBlob(c, file, blobURL, azblob.UploadStreamToBlockBlobOptions{
 		BufferSize: int(ap.maxFileSize),
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return buildUrlAndApplyCallback(blobURL, answerId, callback, questionId)
+	finalUrl, err := buildUrlAndApplyCallback(blobURL, answerId, callback, questionId)
+	if err != nil {
+		return nil, err
+	} else {
+		return &finalUrl, nil
+	}
 }
 
 func (ap *AzureProvider) UploadFileDirect(file multipart.File, filename string, testId uuid.UUID, questionId uuid.UUID,
@@ -139,13 +144,13 @@ func (ap *AzureProvider) DeleteFilesCallback(prefix string, id uuid.UUID, callba
 }
 
 func buildUrlAndApplyCallback(blobURL azblob.BlockBlobURL, answerId *uuid.UUID,
-	callback func(id uuid.UUID, path string) error, questionId uuid.UUID) error {
+	callback func(id uuid.UUID, path string) error, questionId uuid.UUID) (string, error) {
 	blobURLStr := blobURL.URL().Path
 	blobURLStr = os.Getenv("AZURE_SA_URL") + blobURLStr
 	if answerId != nil {
-		return callback(*answerId, blobURLStr)
+		return blobURLStr, callback(*answerId, blobURLStr)
 	} else {
-		return callback(questionId, blobURLStr)
+		return blobURLStr, callback(questionId, blobURLStr)
 	}
 }
 

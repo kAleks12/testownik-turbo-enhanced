@@ -18,3 +18,7 @@ type LogResponse struct {
 type ErrorResponse struct {
 	Error string
 }
+
+type UrlResponse struct {
+	Url string `json:"url"`
+}

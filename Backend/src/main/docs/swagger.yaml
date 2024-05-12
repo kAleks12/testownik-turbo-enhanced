@@ -225,6 +225,11 @@ definitions:
       schoolYear:
         type: string
     type: object
+  src_model_dto.UrlResponse:
+    properties:
+      url:
+        type: string
+    type: object
 info:
   contact: {}
   description: REST API for ZIWG_testo project
@@ -424,7 +429,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/src_model_dto.BaseResponse'
+            $ref: '#/definitions/src_model_dto.UrlResponse'
         "404":
           description: Not Found
           schema:
@@ -776,7 +781,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/src_model_dto.BaseResponse'
+            $ref: '#/definitions/src_model_dto.UrlResponse'
         "404":
           description: Not Found
           schema:

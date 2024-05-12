@@ -279,7 +279,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/src_model_dto.BaseResponse"
+                            "$ref": "#/definitions/src_model_dto.UrlResponse"
                         }
                     },
                     "404": {
@@ -834,7 +834,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/src_model_dto.BaseResponse"
+                            "$ref": "#/definitions/src_model_dto.UrlResponse"
                         }
                     },
                     "404": {
@@ -1795,6 +1795,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "schoolYear": {
+                    "type": "string"
+                }
+            }
+        },
+        "src_model_dto.UrlResponse": {
+            "type": "object",
+            "properties": {
+                "url": {
                     "type": "string"
                 }
             }
