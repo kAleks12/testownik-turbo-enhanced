@@ -259,7 +259,7 @@ func ImportTestHandle(ctx *gin.Context) {
 		return
 	}
 
-	archiveDest, err := UnzipArchive(file, header)
+	archiveDest, err := unzipArchive(file, header)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return

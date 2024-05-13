@@ -43,7 +43,7 @@ func AddAnswerHandle(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
+	_ = updateTestAnswer(ctx, answer.QuestionId)
 	ctx.JSON(200, gin.H{"id": id})
 }
 
@@ -126,7 +126,7 @@ func UpdateAnswerHandle(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
+	_ = updateTestAnswer(ctx, answer.QuestionId)
 	ctx.JSON(200, gin.H{"message": "OK"})
 }
 
@@ -143,6 +143,7 @@ func UpdateAnswerHandle(ctx *gin.Context) {
 // @Router       /api/v1/answer/{id} [delete]
 func DeleteAnswerHandle(ctx *gin.Context) {
 	id, err := uuid.FromString(ctx.Param("id"))
+	answer, err := dal.GetAnswerFromDB(id)
 	err = dal.DeleteAnswerFromDB(id)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		ctx.JSON(404, gin.H{"Record not found with id": id})
@@ -151,7 +152,7 @@ func DeleteAnswerHandle(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
+	_ = updateTestAnswer(ctx, answer.QuestionId)
 	ctx.JSON(200, gin.H{"message": "OK"})
 
 }
@@ -196,6 +197,7 @@ func AddAnswerImageHandle(ctx *gin.Context) {
 			return
 		}
 	}
+	_ = updateTestQuestion(ctx, *testId)
 	ctx.JSON(http.StatusOK, gin.H{"url": url})
 }
 
@@ -222,7 +224,7 @@ func DeleteAnswerImageHandle(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	prefix, err := buildAnswerImagePrefix(id)
+	prefix, testId, err := buildAnswerImagePrefix(id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -238,6 +240,7 @@ func DeleteAnswerImageHandle(ctx *gin.Context) {
 			return
 		}
 	}
+	_ = updateTestQuestion(ctx, *testId)
 	ctx.JSON(http.StatusOK, gin.H{"message": "OK"})
 }
 
@@ -252,17 +255,17 @@ func AddAnswerHandlers(router *gin.RouterGroup) {
 	subGroup.DELETE(":id/image", DeleteAnswerImageHandle)
 }
 
-func buildAnswerImagePrefix(id uuid.UUID) (*string, error) {
+func buildAnswerImagePrefix(id uuid.UUID) (*string, *uuid.UUID, error) {
 	answer, err := dal.GetAnswerFromDB(id)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	question, err := dal.GetQuestionFromDB(answer.QuestionId)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	prefix := question.TestId.String() + "_" + question.Id.String() + "_" + answer.Id.String()
-	return &prefix, nil
+	return &prefix, &question.TestId, nil
 }
 
 func getAnswerPrefixData(id uuid.UUID) (*uuid.UUID, *uuid.UUID, error) {

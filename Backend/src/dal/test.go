@@ -78,3 +78,7 @@ func DeleteTestFromDB(id uuid.UUID) error {
 	result := DB.Delete(&model.Test{}, id)
 	return result.Error
 }
+
+func UpdateTestModel(test *model.Test) error {
+	return DB.Save(test).Error
+}

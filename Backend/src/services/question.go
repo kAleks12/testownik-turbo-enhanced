@@ -55,6 +55,7 @@ func AddQuestionHandle(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 	}
+	_ = updateTestQuestion(ctx, question.TestId)
 	ctx.JSON(200, gin.H{"id": id})
 }
 
@@ -155,7 +156,7 @@ func UpdateQuestionHandle(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
+	_ = updateTestQuestion(ctx, existingQuestion.TestId)
 	ctx.JSON(200, gin.H{"id": id})
 }
 
@@ -177,7 +178,7 @@ func DeleteQuestionHandle(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	prefix, err := buildQuestionImagePrefix(id)
+	prefix, testId, err := buildQuestionImagePrefix(id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -192,7 +193,7 @@ func DeleteQuestionHandle(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
+	_ = updateTestQuestion(ctx, *testId)
 	ctx.JSON(200, gin.H{"message": "OK"})
 
 }
@@ -236,6 +237,7 @@ func AddImageHandle(ctx *gin.Context) {
 			return
 		}
 	}
+	_ = updateTestQuestion(ctx, *testId)
 	ctx.JSON(http.StatusOK, gin.H{"url": url})
 }
 
@@ -263,7 +265,7 @@ func DeleteImageHandle(ctx *gin.Context) {
 		return
 	}
 
-	prefix, err := buildQuestionImagePrefix(id)
+	prefix, testId, err := buildQuestionImagePrefix(id)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -280,6 +282,7 @@ func DeleteImageHandle(ctx *gin.Context) {
 			return
 		}
 	}
+	_ = updateTestQuestion(ctx, *testId)
 	ctx.JSON(http.StatusOK, gin.H{"message": "OK"})
 }
 
@@ -348,13 +351,13 @@ func handleAnswers(existingQuestion *model.Question, existingAnswers []model.Ans
 	})
 }
 
-func buildQuestionImagePrefix(id uuid.UUID) (*string, error) {
+func buildQuestionImagePrefix(id uuid.UUID) (*string, *uuid.UUID, error) {
 	question, err := dal.GetQuestionFromDB(id)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	prefix := question.TestId.String() + "_" + question.Id.String()
-	return &prefix, nil
+	return &prefix, &question.TestId, nil
 }
 
 func getQuestionPrefixData(id uuid.UUID) (*uuid.UUID, error) {

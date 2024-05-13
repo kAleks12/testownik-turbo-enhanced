@@ -3,14 +3,17 @@ package services
 import (
 	"archive/zip"
 	"errors"
+	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
 	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"src/dal"
 	"src/model"
 	"src/model/dto"
 	"strings"
+	"time"
 )
 
 func createNewQuestion(question dto.SubQuestion, testId uuid.UUID) model.Question {
@@ -42,7 +45,7 @@ func containsAnswer(answers []model.Answer, answer model.Answer) bool {
 	return false
 }
 
-func UnzipArchive(file multipart.File, header *multipart.FileHeader) (*string, error) {
+func unzipArchive(file multipart.File, header *multipart.FileHeader) (*string, error) {
 	// Create a temporary directory to unzip the archive
 	tempDir := filepath.Join(os.TempDir(), "temp-"+uuid.Must(uuid.NewV4()).String())
 
@@ -90,4 +93,25 @@ func UnzipArchive(file multipart.File, header *multipart.FileHeader) (*string, e
 		}
 	}
 	return &tempDir, nil
+}
+
+func updateTestAnswer(ctx *gin.Context, questionId uuid.UUID) error {
+	rawUser, _ := ctx.Get("user")
+	user := rawUser.(string)
+	updateTime := time.Now().UTC()
+	question, _ := dal.GetQuestionFromDB(questionId)
+	test, _ := dal.GetTestFromDB(question.TestId)
+	test.ChangedBy = &user
+	test.ChangedAt = &updateTime
+	return dal.UpdateTestModel(test)
+}
+
+func updateTestQuestion(ctx *gin.Context, testId uuid.UUID) error {
+	rawUser, _ := ctx.Get("user")
+	user := rawUser.(string)
+	updateTime := time.Now().UTC()
+	test, _ := dal.GetTestFromDB(testId)
+	test.ChangedBy = &user
+	test.ChangedAt = &updateTime
+	return dal.UpdateTestModel(test)
 }
