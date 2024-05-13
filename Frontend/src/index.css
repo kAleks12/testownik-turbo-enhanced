@@ -54,6 +54,12 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground dark:bg-zinc-900;
+  }
+}
+
+@layer components {
+  input[type="file"]::file-selector-button {
+    @apply text-foreground;
   }
 }

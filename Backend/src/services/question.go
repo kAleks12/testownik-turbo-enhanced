@@ -12,7 +12,7 @@ import (
 	"src/model/dto"
 )
 
-// AddQuestion            godoc
+// AddQuestionHandle            godoc
 // @Summary      Add question
 // @Description  Add question from json body
 // @Tags         question
@@ -55,10 +55,11 @@ func AddQuestionHandle(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 	}
+	_ = updateTestQuestion(ctx, question.TestId)
 	ctx.JSON(200, gin.H{"id": id})
 }
 
-// GetQuestions            godoc
+// GetQuestionsHandle            godoc
 // @Summary      Get questions
 // @Description  Get all questions
 // @Tags         question
@@ -82,7 +83,7 @@ func GetQuestionsHandle(ctx *gin.Context) {
 	ctx.JSON(200, output)
 }
 
-// GetQuestion            godoc
+// GetQuestionHandle            godoc
 // @Summary      Get question
 // @Description  Get question by id
 // @Tags         question
@@ -106,7 +107,7 @@ func GetQuestionHandle(ctx *gin.Context) {
 	ctx.JSON(200, dto.ToFullQuestion(*question))
 }
 
-// UpdateQuestion            godoc
+// UpdateQuestionHandle            godoc
 // @Summary      Update question
 // @Description  Update question by id
 // @Tags         question
@@ -155,11 +156,11 @@ func UpdateQuestionHandle(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
+	_ = updateTestQuestion(ctx, existingQuestion.TestId)
 	ctx.JSON(200, gin.H{"id": id})
 }
 
-// DeleteQuestion            godoc
+// DeleteQuestionHandle            godoc
 // @Summary      Delete question
 // @Description  Delete question by id
 // @Tags         question
@@ -172,6 +173,18 @@ func UpdateQuestionHandle(ctx *gin.Context) {
 // @Router       /api/v1/question/{id} [delete]
 func DeleteQuestionHandle(ctx *gin.Context) {
 	id, err := uuid.FromString(ctx.Param("id"))
+	ap, err := GetAzureProviderInstance()
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	prefix, testId, err := buildQuestionImagePrefix(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err = ap.DeleteFiles(*prefix)
+
 	err = dal.DeleteQuestionFromDB(id)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		ctx.JSON(404, gin.H{"Record not found with id": id})
@@ -180,38 +193,40 @@ func DeleteQuestionHandle(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
+	_ = updateTestQuestion(ctx, *testId)
 	ctx.JSON(200, gin.H{"message": "OK"})
 
 }
 
-// AddImage            godoc
+// AddImageHandle            godoc
 // @Summary      Add image to question
 // @Description  Add image to question by id
 // @Tags         image
 // @Produce      json
 // @Param        id  path  string  true  "Question ID"
 // @Param			file formData file true "file"
-// @Success      200  {object} dto.BaseResponse
+// @Success      200  {object} dto.UrlResponse
 // @Failure  404  {object} dto.ErrorResponse
 // @Failure  500  {object} dto.ErrorResponse
 // @Security     BearerAuth
 // @Router       /api/v1/question/{id}/image [post]
 func AddImageHandle(ctx *gin.Context) {
-
 	azureProvider, err := GetAzureProviderInstance()
 	if err != nil {
 		fmt.Printf("Failed to create AzureProvider: %v\n", err)
 		return
 	}
-
 	id, err := uuid.FromString(ctx.Param("id"))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	err = azureProvider.UploadFile(ctx, id)
+	testId, err := getQuestionPrefixData(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	url, err := azureProvider.UploadFile(ctx, *testId, id, nil, dal.InsertImagePathToQuestionInDb)
 	if err != nil {
 		var ginErr *gin.Error
 		if errors.As(err, &ginErr) {
@@ -222,10 +237,11 @@ func AddImageHandle(ctx *gin.Context) {
 			return
 		}
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "OK"})
+	_ = updateTestQuestion(ctx, *testId)
+	ctx.JSON(http.StatusOK, gin.H{"url": url})
 }
 
-// AddImage            godoc
+// DeleteImageHandle            godoc
 // @Summary      Delete image from question
 // @Description  Delete image from question by id
 // @Tags         image
@@ -249,7 +265,13 @@ func DeleteImageHandle(ctx *gin.Context) {
 		return
 	}
 
-	err = azureProvider.DeleteFile(id)
+	prefix, testId, err := buildQuestionImagePrefix(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = azureProvider.DeleteFilesCallback(*prefix, id, dal.ClearImagePathFromQuestionInDb)
 	if err != nil {
 		var ginErr *gin.Error
 		if errors.As(err, &ginErr) {
@@ -260,6 +282,7 @@ func DeleteImageHandle(ctx *gin.Context) {
 			return
 		}
 	}
+	_ = updateTestQuestion(ctx, *testId)
 	ctx.JSON(http.StatusOK, gin.H{"message": "OK"})
 }
 
@@ -326,4 +349,22 @@ func handleAnswers(existingQuestion *model.Question, existingAnswers []model.Ans
 		}
 		return nil
 	})
+}
+
+func buildQuestionImagePrefix(id uuid.UUID) (*string, *uuid.UUID, error) {
+	question, err := dal.GetQuestionFromDB(id)
+	if err != nil {
+		return nil, nil, err
+	}
+	prefix := question.TestId.String() + "_" + question.Id.String()
+	return &prefix, &question.TestId, nil
+}
+
+func getQuestionPrefixData(id uuid.UUID) (*uuid.UUID, error) {
+	question, err := dal.GetQuestionFromDB(id)
+	if err != nil {
+		return nil, err
+	}
+	testId := question.TestId
+	return &testId, nil
 }

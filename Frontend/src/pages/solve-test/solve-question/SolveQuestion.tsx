@@ -52,7 +52,11 @@ const SolveQuestion = (props: ISolveQuestionProps) => {
       <div className="text-4xl text-center">{question.body}</div>
       <div>
         {question.imgFile && (
-          <img src={question.imgFile} alt="question" className="w-1/2 m-auto" />
+          <img
+            src={question.imgFile}
+            alt="question"
+            className="w-full lg:w-1/2 m-auto rounded"
+          />
         )}
       </div>
       <div className="flex flex-col gap-1">

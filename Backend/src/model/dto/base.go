@@ -7,9 +7,18 @@ type BaseResponse struct {
 }
 
 type IdResponse struct {
-	Id uuid.UUID
+	Id uuid.UUID `json:"id"`
+}
+
+type LogResponse struct {
+	IdResponse
+	Logs []string `json:"logs"`
 }
 
 type ErrorResponse struct {
 	Error string
+}
+
+type UrlResponse struct {
+	Url string `json:"url"`
 }

@@ -11,6 +11,7 @@ import {
   CommandList,
   CommandInput,
   CommandItem,
+  CommandGroup,
 } from "@/components/ui/command";
 import {
   Popover,
@@ -19,12 +20,13 @@ import {
 } from "@/components/ui/popover";
 import { IComboboxProps } from "./IComboboxProps";
 
-interface IComboboxItem {
+interface IComboboxItem<K> {
   key: string;
   value: string;
+  groupValue?: K;
 }
 
-const Combobox = <T,>(props: IComboboxProps<T>) => {
+const Combobox = <T, K>(props: IComboboxProps<T, K>) => {
   const {
     items,
     selectedItem,
@@ -32,9 +34,14 @@ const Combobox = <T,>(props: IComboboxProps<T>) => {
     keyPath,
     valuePath,
     getItemValue,
+    getSelectedItemHeader: getSelectedItemValue,
+    groupPath,
+    groups,
+    required,
+    dropdownWidth,
   } = props;
   const [open, setOpen] = React.useState(false);
-  const [itemsSource, setItemsSource] = React.useState<IComboboxItem[]>([]);
+  const [itemsSource, setItemsSource] = React.useState<IComboboxItem<K>[]>([]);
   const [selectedValue, setSelectedValue] = React.useState<string>("");
 
   const getKey = React.useCallback(
@@ -45,9 +52,12 @@ const Combobox = <T,>(props: IComboboxProps<T>) => {
   );
 
   const getValue = React.useCallback(
-    (item: T | null): string => {
+    (item: T | undefined, selected = false): string => {
       if (!item) {
         return "";
+      }
+      if (selected && getSelectedItemValue) {
+        return getSelectedItemValue(item) ?? "";
       }
       if (getItemValue) {
         return getItemValue(item) ?? "";
@@ -58,12 +68,22 @@ const Combobox = <T,>(props: IComboboxProps<T>) => {
       }
       throw new Error("getItemValue or valuePath must be provided.");
     },
-    [getItemValue, valuePath]
+    [getItemValue, getSelectedItemValue, valuePath]
+  );
+
+  const getGroupValue = React.useCallback(
+    (item: T): K => {
+      if (!groupPath) {
+        throw undefined;
+      }
+      return item[groupPath as keyof T] as K;
+    },
+    [groupPath]
   );
 
   const onSelect = (selectedKey: string) => {
     const selectedValue = items.find((item) => getKey(item) === selectedKey);
-    onItemSelected(selectedValue ?? null);
+    onItemSelected(selectedValue ?? undefined);
     setOpen(false);
   };
 
@@ -75,50 +95,69 @@ const Combobox = <T,>(props: IComboboxProps<T>) => {
       return {
         key: getKey(item) ?? "",
         value: getValue(item) ?? "",
+        groupValue: getGroupValue(item),
       };
     });
     setItemsSource(newItems ?? []);
-  }, [getKey, getValue, items, keyPath]);
+  }, [getGroupValue, getKey, getValue, items, keyPath]);
 
   React.useEffect(() => {
-    setSelectedValue(getValue(selectedItem) ?? "");
+    setSelectedValue(getValue(selectedItem, true) ?? "");
   }, [getValue, selectedItem]);
 
+  const comboItem = (item: IComboboxItem<K>) => {
+    return (
+      <CommandItem
+        key={item.key}
+        value={item.value}
+        onSelect={() => onSelect(item.key)}
+      >
+        <Check
+          className={cn(
+            "mr-2 h-4 w-4",
+            selectedItem && getKey(selectedItem) === item.key
+              ? "opacity-100"
+              : "opacity-0"
+          )}
+        />
+        {item.value}
+      </CommandItem>
+    );
+  };
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className={cn(
+            "w-full justify-between",
+            required && !selectedItem && "border-red-500 border-2"
+          )}
         >
-          {selectedValue || "Select value..."}
+          {selectedValue || "Wybierz z listy..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[800px] p-0">
+      <PopoverContent
+        className="p-0"
+        style={{ width: dropdownWidth ?? "300px" }}
+      >
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder="Wyszukaj..." />
           <CommandEmpty>No item found.</CommandEmpty>
           <CommandList>
-            {itemsSource?.map((item) => (
-              <CommandItem
-                key={item.key}
-                value={item.value}
-                onSelect={() => onSelect(item.key)}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    selectedItem && getKey(selectedItem) === item.key
-                      ? "opacity-100"
-                      : "opacity-0"
-                  )}
-                />
-                {item.value}
-              </CommandItem>
-            ))}
+            {groups
+              ? groups.map((group, index) => (
+                  <CommandGroup key={index} heading={group.header}>
+                    {itemsSource
+                      ?.filter((item) => item.groupValue === group.groupValue)
+                      .map((item) => comboItem(item))}
+                  </CommandGroup>
+                ))
+              : itemsSource.map((item) => comboItem(item))}
           </CommandList>
         </Command>
       </PopoverContent>

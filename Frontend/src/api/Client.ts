@@ -1,10 +1,11 @@
 import axios, { AxiosError } from "axios";
-import { DEFAULT_EP } from "@/shared/utils/constants";
-import { ITest } from "@/shared/interfaces/ITest";
 import LocalStorage from "@/shared/utils/LocalStorage";
 import { LocalStorageElements, StatusCodes } from "@/shared/enums";
 import { IUser } from "@/shared/interfaces";
-import { redirect } from "react-router-dom";
+import Tests from "./Tests";
+import Questions from "./Questions";
+import Answears from "./Answears";
+import Courses from "./Courses";
 
 axios.interceptors.request.use((setup) => {
   const user = LocalStorage.getStoredValue<IUser>(LocalStorageElements.User);
@@ -35,16 +36,17 @@ axios.interceptors.response.use(
         break;
 
       case StatusCodes.Unauthorized:
-        // return refreshToken(error);
+        window.alert("Sesja wygasła, zaloguj się ponownie");
+        window.location.href = "/";
         break;
 
-      case StatusCodes.Gone:
-        redirect("/not-found");
-        break;
+      // case StatusCodes.Gone:
+      //   window.location.href = "/not-found";
+      //   break;
 
-      case StatusCodes.InternalServerError:
-        redirect("/server-error");
-        break;
+      // case StatusCodes.InternalServerError:
+      //   window.location.href = "/server-error";
+      //   break;
 
       default:
         break;
@@ -55,16 +57,10 @@ axios.interceptors.response.use(
 );
 
 const Client = {
-  getTests: async () =>
-    axios.get<ITest[]>(`${DEFAULT_EP}/test`).then((response) => response.data),
-  getTest: async (test_id: string) =>
-    axios
-      .get<ITest>(`${DEFAULT_EP}/test/${test_id}`)
-      .then((response) => response.data),
-  postTest: async (test: ITest) =>
-    axios
-      .post<string>(`${DEFAULT_EP}/test`, test)
-      .then((response) => response.data),
+  Tests,
+  Questions,
+  Answears,
+  Courses,
 };
 
 export default Client;

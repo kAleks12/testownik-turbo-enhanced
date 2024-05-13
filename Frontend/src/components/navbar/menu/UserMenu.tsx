@@ -1,12 +1,19 @@
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { CircleUser } from "lucide-react";
 import { Button } from "../../ui/button";
 import { useAuth } from "@/shared/hooks/auth/useAuth";
+import ThemeButton from "./theme-button/ThemeButton";
 
 const UserMenu = () => {
   const { user, logout } = useAuth();
-  
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -16,12 +23,19 @@ const UserMenu = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>
+        <DropdownMenuLabel className="text-center">
           {user?.firstName} {user?.lastName}
         </DropdownMenuLabel>
         <Separator />
-        <DropdownMenuItem onClick={logout}>
-          <Button variant="link">Wyloguj się</Button>
+        <DropdownMenuItem>
+          <div className="mx-auto group">
+            <ThemeButton />
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={logout} className="cursor-pointer">
+          <Button variant="link" className="mx-auto">
+            Wyloguj się
+          </Button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

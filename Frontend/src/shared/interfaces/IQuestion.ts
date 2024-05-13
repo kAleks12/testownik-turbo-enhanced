@@ -1,9 +1,7 @@
 import { IAnswear } from "./IAnswear";
+import { IQuestionUpdate } from "./IQuestionUpdate";
 
-export interface IQuestion {
+export interface IQuestion extends IQuestionUpdate {
   id: string;
-  body: string;
-  imgFile: string;
-  testId: string;
   answers: IAnswear[];
 }

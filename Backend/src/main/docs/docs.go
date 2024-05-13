@@ -244,6 +244,103 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/answer/{id}/image": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Add image to answer by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "image"
+                ],
+                "summary": "Add image to answer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Answer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.UrlResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete image from answer by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "image"
+                ],
+                "summary": "Delete image from answer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Question ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.BaseResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/course": {
             "get": {
                 "security": [
@@ -737,7 +834,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/src_model_dto.BaseResponse"
+                            "$ref": "#/definitions/src_model_dto.UrlResponse"
                         }
                     },
                     "404": {
@@ -1136,6 +1233,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/test/import": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Import test from zip file",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "test"
+                ],
+                "summary": "Import test",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Test name",
+                        "name": "testName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "School year",
+                        "name": "schoolYear",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Course id",
+                        "name": "courseId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.LogResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/test/{id}": {
             "get": {
                 "security": [
@@ -1296,6 +1459,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "imgFile": {
+                    "type": "string"
+                },
                 "questionId": {
                     "type": "string"
                 },
@@ -1371,6 +1537,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "body": {
+                    "type": "string"
+                },
+                "imgFile": {
                     "type": "string"
                 },
                 "questionId": {
@@ -1491,6 +1660,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.Question"
                     }
+                },
+                "schoolYear": {
+                    "type": "string"
                 }
             }
         },
@@ -1551,6 +1723,20 @@ const docTemplate = `{
                 }
             }
         },
+        "src_model_dto.LogResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "logs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "src_model_dto.QuestionRequest": {
             "type": "object",
             "properties": {
@@ -1575,6 +1761,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "body": {
+                    "type": "string"
+                },
+                "imgFile": {
                     "type": "string"
                 },
                 "valid": {
@@ -1606,6 +1795,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "schoolYear": {
+                    "type": "string"
+                }
+            }
+        },
+        "src_model_dto.UrlResponse": {
+            "type": "object",
+            "properties": {
+                "url": {
                     "type": "string"
                 }
             }
