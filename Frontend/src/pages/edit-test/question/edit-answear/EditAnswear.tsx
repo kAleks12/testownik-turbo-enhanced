@@ -19,20 +19,40 @@ const EditAnswear = (props: IEditAnswearProps) => {
 
   const updateAnswear = () => {
     if (answear.id) {
-      Client.putAnswear(answear.id, { ...answear });
+      Client.Answears.putAnswear(answear.id, { ...answear });
     }
   };
 
   const handleValidChange = () => {
     setAnswear({ ...answear, valid: !answear.valid });
     if (answear.id) {
-      Client.putAnswear(answear.id, { ...answear, valid: !answear.valid });
+      Client.Answears.putAnswear(answear.id, {
+        ...answear,
+        valid: !answear.valid,
+      });
+    }
+  };
+
+  const handleImgChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      Client.Answears.postAnswearImage(answear.id, file).then((response) => {
+        setAnswear({ ...answear, imgFile: response.url });
+      });
+    }
+  };
+
+  const handleDeleteImg = () => {
+    if (answear.id) {
+      Client.Answears.deleteAnswearImage(answear.id).then(() => {
+        setAnswear({ ...answear, imgFile: "" });
+      });
     }
   };
 
   const handleDelete = () => {
     if (answear.id) {
-      Client.deleteAnswear(answear.id).then(() => {
+      Client.Answears.deleteAnswear(answear.id).then(() => {
         onDeleted(answear.id);
       });
     }
@@ -42,13 +62,29 @@ const EditAnswear = (props: IEditAnswearProps) => {
       <Checkbox
         checked={answear.valid ?? false}
         onClick={handleValidChange}
-        className="self-center"
+        className="mt-3"
       />
-      <Input
-        value={answear.body ?? ""}
-        onChange={handleBodyChange}
-        onBlur={updateAnswear}
-      />
+      <div className="w-full gap-1">
+        <Input
+          value={answear.body ?? ""}
+          onChange={handleBodyChange}
+          onBlur={updateAnswear}
+        />
+        {answear.imgFile ? (
+          <div className="flex flex-row mt-2">
+            <img
+              src={answear.imgFile}
+              alt="answear"
+              className="max-w-[550px] rounded"
+            />
+            <Button variant={"ghost"} onClick={handleDeleteImg}>
+              <Trash className="h-4 w-4" />
+            </Button>
+          </div>
+        ) : (
+          <Input type="file" accept="image/*" onChange={handleImgChange} />
+        )}
+      </div>
       <Button variant={"ghost"} onClick={handleDelete}>
         <Trash className="h-4 w-4" />
       </Button>

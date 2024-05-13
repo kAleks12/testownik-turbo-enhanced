@@ -7,6 +7,7 @@ import SolveQuestion from "./solve-question/SolveQuestion";
 import QuestionSummary from "./question-summary/QuestionSummary";
 import { Button, LinkButton } from "@/components/ui";
 import Client from "@/api/Client";
+import Loader from "@/components/loader/Loader";
 
 const SolveTest: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,17 +19,21 @@ const SolveTest: React.FC = () => {
   const [solvedQuestions, setSolvedQuestions] = React.useState<IQuestion[]>([]);
   const [currentQuestion, setCurrentQuestion] =
     React.useState<IQuestion | null>();
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     const fetchData = async () => {
       if (id) {
+        setIsLoading(true);
         try {
-          const testData = await Client.getTest(id);
+          const testData = await Client.Tests.getTest(id);
           console.log(testData);
           setTest(testData);
           setQuestionsToSolve(shuffle(testData.questions ?? []));
         } catch (error) {
           console.error("An error occurred while fetching tests:", error);
+        } finally {
+          setIsLoading(false);
         }
       }
     };
@@ -89,9 +94,9 @@ const SolveTest: React.FC = () => {
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Navbar />
-      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <div className="flex items-center justify-center">
-          <div className="flex flex-row flex-grow gap-8 justify-between">
+      <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-8 lg:p-8">
+        <div className="flex items-center justify-center text-center">
+          <div className="flex flex-col lg:flex-row flex-grow gap-2 lg:gap-8 justify-between">
             <div className="grow" />
             <div className="font-semibold leading-none tracking-tight text-2xl ">
               {test?.name}
@@ -116,7 +121,7 @@ const SolveTest: React.FC = () => {
               {solvedQuestions.map((question) => (
                 <QuestionSummary key={question.id} question={question} />
               ))}
-              <div className="flex flex-col md:flex-row gap-2">
+              <div className="flex flex-col lg:flex-row gap-2">
                 <div className="grow"></div>
                 <LinkButton href="/home" variant="secondary">
                   Wróć do widoku głównego
@@ -128,6 +133,7 @@ const SolveTest: React.FC = () => {
             </div>
           )}
       </main>
+      <Loader isLoading={isLoading} />
     </div>
   );
 };

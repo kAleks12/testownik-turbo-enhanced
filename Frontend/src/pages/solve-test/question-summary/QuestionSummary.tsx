@@ -11,19 +11,25 @@ const QuestionSummary = (props: IQuestionSummaryProps) => {
         <div>{question.body}</div>
         <div>
           {question.imgFile && (
-            <img src={question.imgFile} alt="question" className="w-1/4" />
+            <img
+              src={question.imgFile}
+              alt="question"
+              className="lg:w-1/4 rounded"
+            />
           )}
         </div>
       </CardHeader>
       <CardContent>
-        {question.answers.map((answear) => (
-          <SolveAnswear
-            key={answear.id}
-            answear={answear as IAnswearSolved}
-            revealed
-            small
-          />
-        ))}
+        <div className="grid gap-1">
+          {question.answers.map((answear) => (
+            <SolveAnswear
+              key={answear.id}
+              answear={answear as IAnswearSolved}
+              revealed
+              small
+            />
+          ))}
+        </div>
       </CardContent>
     </Card>
   );

@@ -15,7 +15,7 @@ const CourseSelector = (props: ICourseSelectorProps) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 md:gap-8">
+    <div className="flex flex-col gap-4 lg:gap-8">
       <div>
         <Label>Wybierz kurs</Label>
         <Combobox

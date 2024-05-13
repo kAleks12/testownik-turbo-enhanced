@@ -1,4 +1,5 @@
 import Client from "@/api/Client";
+import Loader from "@/components/loader/Loader";
 import Navbar from "@/components/navbar/Navbar";
 import TestCard from "@/components/test-card/TestCard";
 import { Label } from "@/components/ui";
@@ -13,20 +14,24 @@ const SearchCourse: React.FC = () => {
   const [nameFilter, setNameFilter] = useState<string>("");
   const [teacherFilter, setTeacherFilter] = useState<string>("");
   const [courseFilter, setCourseFilter] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDeleted = (id: string) => {
     setTests(tests.filter((test) => test.id !== id));
   };
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchData = async () => {
       try {
-        const testsData = await Client.getTests();
+        const testsData = await Client.Tests.getTests();
         console.log("Tests data:", testsData);
 
         setTests(testsData);
       } catch (error) {
         console.error("An error occurred while fetching tests:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -74,7 +79,7 @@ const SearchCourse: React.FC = () => {
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Navbar />
-      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+      <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-8 lg:p-8">
         <div className="grid gap-2 text-center">
           <div className="text-4xl font-bold">
             WYSZUKAJ SWÓJ ZBAWCZY TESTOWNIK
@@ -83,7 +88,7 @@ const SearchCourse: React.FC = () => {
             I skończ wreszcie udawać że się uczysz
           </p>
         </div>
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col lg:flex-row gap-4">
           <div className="grow">
             <Label>Nazwa testo</Label>
             <div className="relative">
@@ -125,12 +130,13 @@ const SearchCourse: React.FC = () => {
           </div>
         </div>
         <div className="text-2xl">Testowniki:</div>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 lg:grid-cols-2">
           {filteredTests.map((test) => (
             <TestCard key={test.id} test={test} onDeleted={handleDeleted} />
           ))}
         </div>
       </main>
+      <Loader isLoading={isLoading} />
     </div>
   );
 };

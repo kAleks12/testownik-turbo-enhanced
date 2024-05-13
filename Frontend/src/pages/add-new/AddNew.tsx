@@ -3,17 +3,22 @@ import Navbar from "@/components/navbar/Navbar";
 import AddNewPopup from "./add-new-popup/AddNewPopup";
 import { ICourse } from "@/shared/interfaces";
 import Client from "@/api/Client";
+import Loader from "@/components/loader/Loader";
 
 const AddNew: React.FC = () => {
   const [courses, setCourses] = React.useState<ICourse[]>([]);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
-        const coursesData = await Client.getCourses();
+        const coursesData = await Client.Courses.getCourses();
         setCourses(coursesData);
       } catch (error) {
         console.error("An error occurred while fetching courses:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -38,6 +43,7 @@ const AddNew: React.FC = () => {
           </div>
         </div>
       </main>
+      <Loader isLoading={isLoading} />
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import Loader from "@/components/loader/Loader";
 import { AuthActions } from "@/shared/enums";
 import { AuthResponseElements } from "@/shared/enums/AuthResponseElements";
 import { useAuth } from "@/shared/hooks/auth/useAuth";
@@ -61,7 +62,7 @@ const LoadingPage = () => {
     }
   }, [dispatchUser, navigate]);
 
-  return <div>Oczekiwanie na pobranie danych</div>;
+  return <Loader isLoading isImmediate />;
 };
 
 export default LoadingPage;

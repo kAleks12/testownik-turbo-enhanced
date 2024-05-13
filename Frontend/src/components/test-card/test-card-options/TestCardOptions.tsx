@@ -15,7 +15,7 @@ const TestCardOptions = (props: ITestCardOptionsProps) => {
   const { testId, onDeleted } = props;
 
   const handleDelete = () => {
-    Client.deleteTest(testId).then(() => {
+    Client.Tests.deleteTest(testId).then(() => {
       onDeleted(testId);
     });
   };

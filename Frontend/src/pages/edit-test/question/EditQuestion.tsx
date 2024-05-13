@@ -22,7 +22,7 @@ const EditQuestion = (props: IEditQuestionProps) => {
 
   const handleDelete = () => {
     if (question.id) {
-      Client.deleteQuestion(question.id).then(() => {
+      Client.Questions.deleteQuestion(question.id).then(() => {
         onDeleted(question.id);
       });
     }
@@ -34,7 +34,10 @@ const EditQuestion = (props: IEditQuestionProps) => {
 
   const updateQuestion = () => {
     if (question.id) {
-      Client.putQuestion(question.id, question).then(() => {
+      Client.Questions.putQuestion(question.id, {
+        ...question,
+        answers: [],
+      }).then(() => {
         onUpdated(question);
       });
     }
@@ -49,8 +52,13 @@ const EditQuestion = (props: IEditQuestionProps) => {
 
   const handleAddAnswear = () => {
     if (question.id) {
-      const newAnswear = { questionId: question.id, body: "", valid: false };
-      Client.postAnswear(newAnswear).then((response) => {
+      const newAnswear = {
+        questionId: question.id,
+        body: "",
+        imgFile: "",
+        valid: false,
+      };
+      Client.Answears.postAnswear(newAnswear).then((response) => {
         setQuestion({
           ...question,
           answers: [
@@ -65,7 +73,7 @@ const EditQuestion = (props: IEditQuestionProps) => {
   const handleImgChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
-      Client.postQuestionImage(question.id, file).then((response) => {
+      Client.Questions.postQuestionImage(question.id, file).then((response) => {
         setQuestion({ ...question, imgFile: response.url });
       });
     }
@@ -73,7 +81,7 @@ const EditQuestion = (props: IEditQuestionProps) => {
 
   const handleDeleteImg = () => {
     if (question.id) {
-      Client.deleteQuestionImage(question.id).then(() => {
+      Client.Questions.deleteQuestionImage(question.id).then(() => {
         setQuestion({ ...question, imgFile: "" });
       });
     }
@@ -102,7 +110,11 @@ const EditQuestion = (props: IEditQuestionProps) => {
           <Label>Obrazek</Label>
           {question.imgFile ? (
             <div className="flex flex-row justify-center">
-              <img src={question.imgFile} alt="question" className="w-1/2" />
+              <img
+                src={question.imgFile}
+                alt="question"
+                className="lg:w-1/2 rounded"
+              />
               <Button variant={"ghost"} onClick={handleDeleteImg}>
                 <Trash className="h-4 w-4" />
               </Button>

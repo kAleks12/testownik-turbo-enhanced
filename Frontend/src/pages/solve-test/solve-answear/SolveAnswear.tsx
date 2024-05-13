@@ -56,6 +56,18 @@ const SolveAnswear = (props: ISolveAnswearProps) => {
       onClick={handleClick}
     >
       {answear.body}
+      <div>
+        {answear.imgFile && (
+          <img
+            src={answear.imgFile}
+            alt="answear"
+            className={cn(
+              small ? "md: w-1/2 lg:w-1/4" : "max-w-[550px] m-auto",
+              "rounded"
+            )}
+          />
+        )}
+      </div>
     </div>
   );
 };

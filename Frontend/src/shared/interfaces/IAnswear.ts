@@ -1,6 +1,5 @@
-export interface IAnswear {
+import { IAnswearUpdate } from "./IAnswearUpdate";
+
+export interface IAnswear extends IAnswearUpdate {
   id: string;
-  body: string;
-  valid: boolean;
-  questionId: string;
 }
