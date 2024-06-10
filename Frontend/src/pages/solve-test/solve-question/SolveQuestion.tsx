@@ -55,7 +55,7 @@ const SolveQuestion = (props: ISolveQuestionProps) => {
           <img
             src={question.imgFile}
             alt="question"
-            className="w-full lg:w-1/2 m-auto rounded"
+            className="w-full lg:w-1/2 m-auto rounded bg-white"
           />
         )}
       </div>

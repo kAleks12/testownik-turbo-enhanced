@@ -75,7 +75,7 @@ const EditAnswear = (props: IEditAnswearProps) => {
             <img
               src={answear.imgFile}
               alt="answear"
-              className="max-w-[550px] rounded"
+              className="max-w-[550px] rounded bg-white"
             />
             <Button variant={"ghost"} onClick={handleDeleteImg}>
               <Trash className="h-4 w-4" />
