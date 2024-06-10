@@ -57,7 +57,7 @@ const ThemeButton = () => {
           <Moon className="h-4 w-4" />
         </div>
       </Button>
-      <div className="ml-2 font-semibold content-center">
+      <div className="ml-2 text-sm font-semibold content-center">
         {theme === Theme.Light ? "Jasny motyw" : "Ciemny motyw"}
       </div>
     </div>

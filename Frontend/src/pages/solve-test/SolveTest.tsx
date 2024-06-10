@@ -5,9 +5,11 @@ import { IAnswearSolved, IQuestion, ITest } from "@/shared/interfaces";
 import { deepCopy, shuffle } from "@/shared/utils/helpers";
 import SolveQuestion from "./solve-question/SolveQuestion";
 import QuestionSummary from "./question-summary/QuestionSummary";
-import { Button, LinkButton } from "@/components/ui";
+import { Button, LinkButton, Progress } from "@/components/ui";
 import Client from "@/api/Client";
 import Loader from "@/components/loader/Loader";
+import LocalStorage from "@/shared/utils/LocalStorage";
+import { LocalStorageElements } from "@/shared/enums";
 
 const SolveTest: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,6 +21,11 @@ const SolveTest: React.FC = () => {
   const [solvedQuestions, setSolvedQuestions] = React.useState<IQuestion[]>([]);
   const [currentQuestion, setCurrentQuestion] =
     React.useState<IQuestion | null>();
+  const [counter, setCounter] = React.useState<number>(0);
+  const [repeatCount, setRepeatCount] = React.useState<number>(0);
+  const [solvedCount, setSolvedCount] = React.useState<number>(0);
+  const [solvedIds] = React.useState<string[]>([]);
+  const [numberOfQuestions, setNumberOfQuestions] = React.useState<number>(0);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
@@ -29,7 +36,17 @@ const SolveTest: React.FC = () => {
           const testData = await Client.Tests.getTest(id);
           console.log(testData);
           setTest(testData);
-          setQuestionsToSolve(shuffle(testData.questions ?? []));
+          const count =
+            LocalStorage.getStoredValue<number>(
+              LocalStorageElements.RepeatCount
+            ) ?? 2;
+          setRepeatCount(count);
+          let questions: IQuestion[] = [];
+          setNumberOfQuestions((testData.questions?.length ?? 0) * count);
+          for (let i = 0; i < count; i++) {
+            questions = [...questions, ...(testData.questions ?? [])];
+          }
+          setQuestionsToSolve(shuffle(questions));
         } catch (error) {
           console.error("An error occurred while fetching tests:", error);
         } finally {
@@ -42,12 +59,18 @@ const SolveTest: React.FC = () => {
   }, [id]);
 
   React.useEffect(() => {
-    setCurrentQuestion(
+    const newQuestion =
       questionsToSolve && questionsToSolve.length > 0
         ? questionsToSolve[0]
-        : null
-    );
+        : null;
+    setCurrentQuestion(newQuestion);
   }, [questionsToSolve]);
+
+  React.useEffect(() => {
+    setSolvedCount(
+      solvedIds.filter((x) => x === currentQuestion?.id).length + 1
+    );
+  }, [currentQuestion, solvedIds]);
 
   const finish = (answearsSolved?: IAnswearSolved[]) => {
     if (
@@ -60,6 +83,8 @@ const SolveTest: React.FC = () => {
       }
       solvedQuestions.push(questionCpy);
     }
+
+    solvedIds.push(currentQuestion?.id || "");
 
     currentQuestion?.answers.forEach(
       (answear) => ((answear as IAnswearSolved).selected = false)
@@ -76,6 +101,7 @@ const SolveTest: React.FC = () => {
     finish(answearsSolved);
     if (correct) {
       setQuestionsToSolve((prev) => prev.slice(1));
+      setCounter(counter + 1);
     } else {
       setQuestionsToSolve((prev) => shuffle(prev));
     }
@@ -83,6 +109,7 @@ const SolveTest: React.FC = () => {
 
   const handleSkip = () => {
     finish();
+    setCounter(counter + 1);
     setQuestionsToSolve((prev) => prev.slice(1));
   };
 
@@ -94,11 +121,12 @@ const SolveTest: React.FC = () => {
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Navbar />
+      <Progress value={(counter * 100) / numberOfQuestions} />
       <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-8 lg:p-8">
         <div className="flex items-center justify-center text-center">
           <div className="flex flex-col lg:flex-row flex-grow gap-2 lg:gap-8 justify-between">
             <div className="grow" />
-            <div className="font-semibold leading-none tracking-tight text-2xl ">
+            <div className="font-semibold leading-none tracking-tight text-xl md:text-2xl ">
               {test?.name}
             </div>
             <div className="grow" />
@@ -113,6 +141,8 @@ const SolveTest: React.FC = () => {
             question={currentQuestion}
             onNext={handleNext}
             onSkip={handleSkip}
+            repeatCount={repeatCount}
+            solvedCount={solvedCount}
           />
         )}
         {test?.questions?.length === solvedQuestions.length &&
