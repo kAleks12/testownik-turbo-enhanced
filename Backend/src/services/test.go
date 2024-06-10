@@ -264,7 +264,6 @@ func ImportTestHandle(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	*archiveDest += "//" + fileNameParts[0]
 	logs, err := processArchive(*archiveDest, testId)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
@@ -338,6 +337,7 @@ func processArchive(path string, testId uuid.UUID) ([]string, error) {
 
 func processQuestion(path string, testId uuid.UUID, ap *AzureProvider) (string, error) {
 	answers, questionConfig, body, err := readQuestionAttr(path)
+
 	if err != nil {
 		return err.Error(), err
 	}
@@ -449,14 +449,14 @@ func readQuestionAttr(path string) ([]string, *string, *string, error) {
 			questionConfig = line[1:]
 			continue
 		}
-
 		if body == "" {
 			body = line
 			continue
 		}
-		//strip line before append
-		answerBody := strings.TrimSpace(line)
-		answers = append(answers, answerBody)
+		if line != "" {
+			answerBody := strings.TrimSpace(line)
+			answers = append(answers, answerBody)
+		}
 	}
 	return answers, &questionConfig, &body, nil
 }
