@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
-	"golang.org/x/text/encoding/charmap"
 	"gorm.io/gorm"
 	"mime/multipart"
 	"os"
@@ -434,8 +433,7 @@ func readQuestionAttr(path string) ([]string, *string, *string, error) {
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	reader := charmap.Windows1250.NewDecoder().Reader(file)
-	scanner := bufio.NewScanner(reader)
+	scanner := bufio.NewScanner(file)
 
 	questionConfig := ""
 	body := ""

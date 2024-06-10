@@ -14,7 +14,7 @@ const QuestionSummary = (props: IQuestionSummaryProps) => {
             <img
               src={question.imgFile}
               alt="question"
-              className="lg:w-1/4 rounded"
+              className="lg:w-1/4 rounded bg-white"
             />
           )}
         </div>

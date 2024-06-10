@@ -63,7 +63,7 @@ const SolveAnswear = (props: ISolveAnswearProps) => {
             alt="answear"
             className={cn(
               small ? "md: w-1/2 lg:w-1/4" : "max-w-[550px] m-auto",
-              "rounded"
+              "rounded bg-white"
             )}
           />
         )}

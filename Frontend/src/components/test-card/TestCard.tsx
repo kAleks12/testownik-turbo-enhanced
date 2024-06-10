@@ -15,7 +15,7 @@ const TestCard = (props: ITestCardProps) => {
 
   return (
     <Link to={`/solve/${test.id}`}>
-      <Card className="hover:border-solid hover:border-current group">
+      <Card className="hover:border-solid hover:border-current group h-full">
         <CardHeader>
           <div className="flex flex-row">
             <div className="font-semibold leading-none tracking-tight content-center group-hover:text-2xl">

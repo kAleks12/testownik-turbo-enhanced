@@ -113,7 +113,7 @@ const EditQuestion = (props: IEditQuestionProps) => {
               <img
                 src={question.imgFile}
                 alt="question"
-                className="lg:w-1/2 rounded"
+                className="lg:w-1/2 rounded bg-white"
               />
               <Button variant={"ghost"} onClick={handleDeleteImg}>
                 <Trash className="h-4 w-4" />
