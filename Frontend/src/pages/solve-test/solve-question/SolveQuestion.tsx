@@ -3,37 +3,25 @@ import { shuffle } from "@/shared/utils/helpers";
 import { ISolveQuestionProps } from "./ISolveQuestionProps";
 import SolveAnswear from "../solve-answear/SolveAnswear";
 import { Button } from "@/components/ui";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { IAnswearSolved } from "@/shared/interfaces";
 
 const SolveQuestion = (props: ISolveQuestionProps) => {
   const { question, onNext, onSkip, repeatCount, solvedCount } = props;
   const [answears, setAnswears] = React.useState<IAnswearSolved[]>([]);
+  const [isRevealed, setIsRevealed] = React.useState(false);
 
-  const [showAll, setShowAll] = React.useState(false);
-  const [nextDisabled, setNextDisabled] = React.useState(false);
-
-  const finish = (): Promise<void> => {
-    return new Promise((resolve) => {
-      setShowAll(true);
-      setNextDisabled(true);
-      setTimeout(() => {
-        setShowAll(false);
-        setNextDisabled(false);
-        resolve();
-      }, 2000);
-    });
+  const handleShow = () => {
+    setIsRevealed(true);
   };
 
   const handleNext = () => {
-    finish().then(() => {
-      onNext(answears);
-    });
+    onNext(answears);
+    setIsRevealed(false);
   };
+
   const handleSkip = () => {
-    finish().then(() => {
-      onSkip();
-    });
+    onSkip();
   };
 
   React.useEffect(() => {
@@ -66,21 +54,29 @@ const SolveQuestion = (props: ISolveQuestionProps) => {
       </div>
       <div className="flex flex-col gap-1">
         {answears.map((answear) => (
-          <SolveAnswear key={answear.id} answear={answear} revealed={showAll} />
+          <SolveAnswear 
+            key={answear.id} 
+            answear={answear} 
+            revealed={isRevealed} 
+          />
         ))}
       </div>
       <div className="flex gap-2">
-        <div className="grow"></div>
+        <div className="grow"/>
         <Button
           variant={"secondary"}
-          disabled={nextDisabled}
           onClick={handleSkip}
         >
           Skip
         </Button>
-        <Button disabled={nextDisabled} onClick={handleNext}>
+        {isRevealed && (
+          <Button onClick={handleNext}>
           Kolejne pytanie <ArrowRight className="h-5 w-5" />
-        </Button>
+        </Button>)}
+        {!isRevealed && (
+          <Button onClick={handleShow}>
+            Sprawdź odpowiedzi <Check className="h-5 w-5" />
+          </Button>)}
       </div>
     </div>
   );
