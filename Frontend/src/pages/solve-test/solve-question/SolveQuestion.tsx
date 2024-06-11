@@ -7,7 +7,7 @@ import { ArrowRight } from "lucide-react";
 import { IAnswearSolved } from "@/shared/interfaces";
 
 const SolveQuestion = (props: ISolveQuestionProps) => {
-  const { question, onNext, onSkip } = props;
+  const { question, onNext, onSkip, repeatCount, solvedCount } = props;
   const [answears, setAnswears] = React.useState<IAnswearSolved[]>([]);
 
   const [showAll, setShowAll] = React.useState(false);
@@ -49,7 +49,12 @@ const SolveQuestion = (props: ISolveQuestionProps) => {
 
   return (
     <div className="grid gap-4 transition ease-in-out delay-200">
-      <div className="text-4xl text-center">{question.body}</div>
+      <div className="text-2xl md:text-4xl text-center">
+        {question.body}
+        <span className="text-muted-foreground">
+          &nbsp;({solvedCount}/{repeatCount})
+        </span>
+      </div>
       <div>
         {question.imgFile && (
           <img
