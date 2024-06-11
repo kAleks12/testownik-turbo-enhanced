@@ -30,10 +30,12 @@ const SolveAnswear = (props: ISolveAnswearProps) => {
     }
     if (answear.valid) {
       if (answear.selected) {
-        setAnswearStyle("bg-green-700 dark:bg-green-900");
+        setAnswearStyle("bg-green-600 dark:bg-green-900");
         return;
       }
-      setAnswearStyle("bg-green-500 dark:bg-green-800");
+      setAnswearStyle(
+        "bg-green-500 border-2 border-red-500 dark:bg-green-800 dark:border-red-800"
+      );
       return;
     }
     if (answear.selected && !answear.valid) {
