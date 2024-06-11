@@ -22,7 +22,7 @@ const SolveTest: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] =
     React.useState<IQuestion | null>();
   const [counter, setCounter] = React.useState<number>(0);
-  const [repeatCount, setRepeatCount] = React.useState<number>(0);
+  const [leftToSolve, setLeftToSolve] = React.useState<number>(0);
   const [solvedCount, setSolvedCount] = React.useState<number>(0);
   const [solvedIds] = React.useState<string[]>([]);
   const [numberOfQuestions, setNumberOfQuestions] = React.useState<number>(0);
@@ -40,7 +40,6 @@ const SolveTest: React.FC = () => {
             LocalStorage.getStoredValue<number>(
               LocalStorageElements.RepeatCount
             ) ?? 2;
-          setRepeatCount(count);
           let questions: IQuestion[] = [];
           setNumberOfQuestions((testData.questions?.length ?? 0) * count);
           for (let i = 0; i < count; i++) {
@@ -67,10 +66,11 @@ const SolveTest: React.FC = () => {
   }, [questionsToSolve]);
 
   React.useEffect(() => {
-    setSolvedCount(
-      solvedIds.filter((x) => x === currentQuestion?.id).length + 1
+    setSolvedCount(solvedIds.filter((x) => x === currentQuestion?.id).length);
+    setLeftToSolve(
+      questionsToSolve.filter((x) => x.id === currentQuestion?.id).length
     );
-  }, [currentQuestion, solvedIds]);
+  }, [currentQuestion, questionsToSolve, solvedIds]);
 
   const finish = (answearsSolved?: IAnswearSolved[]) => {
     if (
@@ -141,7 +141,7 @@ const SolveTest: React.FC = () => {
             question={currentQuestion}
             onNext={handleNext}
             onSkip={handleSkip}
-            repeatCount={repeatCount}
+            leftToSolve={leftToSolve}
             solvedCount={solvedCount}
           />
         )}
