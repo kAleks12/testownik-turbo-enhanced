@@ -4,6 +4,6 @@ export interface ISolveQuestionProps {
   question: IQuestion;
   onNext: (selectedAnswears: IAnswearSolved[]) => void;
   onSkip: () => void;
-  repeatCount: number;
+  leftToSolve: number;
   solvedCount: number;
 }

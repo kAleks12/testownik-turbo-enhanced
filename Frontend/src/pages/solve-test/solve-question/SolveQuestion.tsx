@@ -7,7 +7,7 @@ import { ArrowRight, Check } from "lucide-react";
 import { IAnswearSolved } from "@/shared/interfaces";
 
 const SolveQuestion = (props: ISolveQuestionProps) => {
-  const { question, onNext, onSkip, repeatCount, solvedCount } = props;
+  const { question, onNext, onSkip, leftToSolve, solvedCount } = props;
   const [answears, setAnswears] = React.useState<IAnswearSolved[]>([]);
   const [isRevealed, setIsRevealed] = React.useState(false);
 
@@ -40,7 +40,7 @@ const SolveQuestion = (props: ISolveQuestionProps) => {
       <div className="text-2xl md:text-4xl text-center">
         {question.body}
         <span className="text-muted-foreground">
-          &nbsp;({solvedCount}/{repeatCount})
+          &nbsp;({solvedCount + 1}/{solvedCount + leftToSolve})
         </span>
       </div>
       <div>
@@ -54,29 +54,28 @@ const SolveQuestion = (props: ISolveQuestionProps) => {
       </div>
       <div className="flex flex-col gap-1">
         {answears.map((answear) => (
-          <SolveAnswear 
-            key={answear.id} 
-            answear={answear} 
-            revealed={isRevealed} 
+          <SolveAnswear
+            key={answear.id}
+            answear={answear}
+            revealed={isRevealed}
           />
         ))}
       </div>
       <div className="flex gap-2">
-        <div className="grow"/>
-        <Button
-          variant={"secondary"}
-          onClick={handleSkip}
-        >
+        <div className="grow" />
+        <Button variant={"secondary"} onClick={handleSkip}>
           Skip
         </Button>
         {isRevealed && (
-          <Button onClick={handleNext}>
-          Kolejne pytanie <ArrowRight className="h-5 w-5" />
-        </Button>)}
+          <Button onClick={handleNext} className="gap-1">
+            Kolejne pytanie <ArrowRight className="h-5 w-5" />
+          </Button>
+        )}
         {!isRevealed && (
-          <Button onClick={handleShow}>
+          <Button onClick={handleShow} className="gap-1">
             Sprawdź odpowiedzi <Check className="h-5 w-5" />
-          </Button>)}
+          </Button>
+        )}
       </div>
     </div>
   );
