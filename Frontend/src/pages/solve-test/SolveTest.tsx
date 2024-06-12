@@ -1,7 +1,7 @@
 import React from "react";
 import Navbar from "@/components/navbar/Navbar";
 import { useParams } from "react-router-dom";
-import { IAnswearSolved, IQuestion, ITest } from "@/shared/interfaces";
+import { IAnswerSolved, IQuestion, ITest } from "@/shared/interfaces";
 import { deepCopy, shuffle } from "@/shared/utils/helpers";
 import SolveQuestion from "./solve-question/SolveQuestion";
 import QuestionSummary from "./question-summary/QuestionSummary";
@@ -10,6 +10,7 @@ import Client from "@/api/Client";
 import Loader from "@/components/loader/Loader";
 import LocalStorage from "@/shared/utils/LocalStorage";
 import { LocalStorageElements } from "@/shared/enums";
+import { DEFAULT_QUESTION_COUNT } from "@/shared/utils/constants";
 
 const SolveTest: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,9 +25,21 @@ const SolveTest: React.FC = () => {
   const [counter, setCounter] = React.useState<number>(0);
   const [leftToSolve, setLeftToSolve] = React.useState<number>(0);
   const [solvedCount, setSolvedCount] = React.useState<number>(0);
-  const [solvedIds] = React.useState<string[]>([]);
+  const [solvedIds, setSolvedIds] = React.useState<string[]>([]);
   const [numberOfQuestions, setNumberOfQuestions] = React.useState<number>(0);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
+  const setQuestions = (newQuestions: IQuestion[]) => {
+    const count =
+      LocalStorage.getStoredValue<number>(LocalStorageElements.RepeatCount) ??
+      DEFAULT_QUESTION_COUNT;
+    let questions: IQuestion[] = [];
+    setNumberOfQuestions((newQuestions?.length ?? 0) * count);
+    for (let i = 0; i < count; i++) {
+      questions = [...questions, ...(newQuestions ?? [])];
+    }
+    setQuestionsToSolve(shuffle(questions));
+  };
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -36,16 +49,7 @@ const SolveTest: React.FC = () => {
           const testData = await Client.Tests.getTest(id);
           console.log(testData);
           setTest(testData);
-          const count =
-            LocalStorage.getStoredValue<number>(
-              LocalStorageElements.RepeatCount
-            ) ?? 2;
-          let questions: IQuestion[] = [];
-          setNumberOfQuestions((testData.questions?.length ?? 0) * count);
-          for (let i = 0; i < count; i++) {
-            questions = [...questions, ...(testData.questions ?? [])];
-          }
-          setQuestionsToSolve(shuffle(questions));
+          setQuestions(testData.questions ?? []);
         } catch (error) {
           console.error("An error occurred while fetching tests:", error);
         } finally {
@@ -72,14 +76,14 @@ const SolveTest: React.FC = () => {
     );
   }, [currentQuestion, questionsToSolve, solvedIds]);
 
-  const finish = (answearsSolved?: IAnswearSolved[]) => {
+  const finish = (answersSolved?: IAnswerSolved[]) => {
     if (
       currentQuestion &&
       !solvedQuestions.some((question) => question.id === currentQuestion?.id)
     ) {
       const questionCpy = deepCopy(currentQuestion);
-      if (answearsSolved) {
-        questionCpy.answers = deepCopy(answearsSolved);
+      if (answersSolved) {
+        questionCpy.answers = deepCopy(answersSolved);
       }
       solvedQuestions.push(questionCpy);
     }
@@ -87,18 +91,17 @@ const SolveTest: React.FC = () => {
     solvedIds.push(currentQuestion?.id || "");
 
     currentQuestion?.answers.forEach(
-      (answear) => ((answear as IAnswearSolved).selected = false)
+      (answer) => ((answer as IAnswerSolved).selected = false)
     );
   };
 
-  const handleNext = (answearsSolved: IAnswearSolved[]) => {
-    const correct = answearsSolved.every((answear) => {
+  const handleNext = (answersSolved: IAnswerSolved[]) => {
+    const correct = answersSolved.every((answer) => {
       return (
-        (answear.valid && answear.selected) ||
-        (!answear.valid && !answear.selected)
+        (answer.valid && answer.selected) || (!answer.valid && !answer.selected)
       );
     });
-    finish(answearsSolved);
+    finish(answersSolved);
     if (correct) {
       setQuestionsToSolve((prev) => prev.slice(1));
       setCounter(counter + 1);
@@ -114,8 +117,10 @@ const SolveTest: React.FC = () => {
   };
 
   const handleRefresh = () => {
-    setQuestionsToSolve(shuffle(test?.questions || []));
+    setQuestions(shuffle(test?.questions ?? []));
     setSolvedQuestions([]);
+    setSolvedIds([]);
+    setCounter(0);
   };
 
   return (

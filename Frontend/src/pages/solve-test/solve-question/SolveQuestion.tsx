@@ -1,14 +1,14 @@
 import React from "react";
 import { shuffle } from "@/shared/utils/helpers";
 import { ISolveQuestionProps } from "./ISolveQuestionProps";
-import SolveAnswear from "../solve-answear/SolveAnswear";
+import SolveAnswer from "../solve-answer/SolveAnswer";
 import { Button } from "@/components/ui";
 import { ArrowRight, Check } from "lucide-react";
-import { IAnswearSolved } from "@/shared/interfaces";
+import { IAnswerSolved } from "@/shared/interfaces";
 
 const SolveQuestion = (props: ISolveQuestionProps) => {
   const { question, onNext, onSkip, leftToSolve, solvedCount } = props;
-  const [answears, setAnswears] = React.useState<IAnswearSolved[]>([]);
+  const [answers, setAnswers] = React.useState<IAnswerSolved[]>([]);
   const [isRevealed, setIsRevealed] = React.useState(false);
 
   const handleShow = () => {
@@ -16,7 +16,7 @@ const SolveQuestion = (props: ISolveQuestionProps) => {
   };
 
   const handleNext = () => {
-    onNext(answears);
+    onNext(answers);
     setIsRevealed(false);
   };
 
@@ -26,10 +26,10 @@ const SolveQuestion = (props: ISolveQuestionProps) => {
 
   React.useEffect(() => {
     if (!question.answers) return;
-    setAnswears(
+    setAnswers(
       shuffle(
-        question.answers.map((answear) => {
-          return { selected: false, ...answear };
+        question.answers.map((answer) => {
+          return { selected: false, ...answer };
         })
       )
     );
@@ -53,12 +53,8 @@ const SolveQuestion = (props: ISolveQuestionProps) => {
         )}
       </div>
       <div className="flex flex-col gap-1">
-        {answears.map((answear) => (
-          <SolveAnswear
-            key={answear.id}
-            answear={answear}
-            revealed={isRevealed}
-          />
+        {answers.map((answer) => (
+          <SolveAnswer key={answer.id} answer={answer} revealed={isRevealed} />
         ))}
       </div>
       <div className="flex gap-2">

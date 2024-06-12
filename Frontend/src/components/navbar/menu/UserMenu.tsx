@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import React from "react";
 import LocalStorage from "@/shared/utils/LocalStorage";
 import { LocalStorageElements } from "@/shared/enums";
+import { DEFAULT_QUESTION_COUNT } from "@/shared/utils/constants";
 
 const UserMenu = () => {
   const { user, logout } = useAuth();
@@ -19,7 +20,7 @@ const UserMenu = () => {
     const storedCount = LocalStorage.getStoredValue<number>(
       LocalStorageElements.RepeatCount
     );
-    setRepeatCount(storedCount ?? 1);
+    setRepeatCount(storedCount ?? DEFAULT_QUESTION_COUNT);
   }, []);
 
   const setCount = (newCount: number) => {

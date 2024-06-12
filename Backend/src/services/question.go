@@ -145,9 +145,7 @@ func UpdateQuestionHandle(ctx *gin.Context) {
 
 	existingQuestion.Body = request.Body
 	existingQuestion.ImgFile = request.ImgFile
-	newAnswers, existingAnswers := prepareAnswers(request, existingQuestion)
-	err = handleAnswers(existingQuestion, existingAnswers, newAnswers)
-
+	err = dal.UpdateQuestionInDB(existingQuestion)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		ctx.JSON(404, gin.H{"Record not found with id": id})
 		return

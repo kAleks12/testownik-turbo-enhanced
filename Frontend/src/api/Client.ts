@@ -4,7 +4,7 @@ import { LocalStorageElements, StatusCodes } from "@/shared/enums";
 import { IUser } from "@/shared/interfaces";
 import Tests from "./Tests";
 import Questions from "./Questions";
-import Answears from "./Answears";
+import Answers from "./Answers";
 import Courses from "./Courses";
 
 axios.interceptors.request.use((setup) => {
@@ -59,7 +59,7 @@ axios.interceptors.response.use(
 const Client = {
   Tests,
   Questions,
-  Answears,
+  Answers,
   Courses,
 };
 

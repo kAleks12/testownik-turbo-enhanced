@@ -1,8 +1,8 @@
-import { IAnswearSolved, IQuestion } from "@/shared/interfaces";
+import { IAnswerSolved, IQuestion } from "@/shared/interfaces";
 
 export interface ISolveQuestionProps {
   question: IQuestion;
-  onNext: (selectedAnswears: IAnswearSolved[]) => void;
+  onNext: (selectedAnswers: IAnswerSolved[]) => void;
   onSkip: () => void;
   leftToSolve: number;
   solvedCount: number;
