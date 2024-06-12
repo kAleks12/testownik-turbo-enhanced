@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui";
 import { IQuestionSummaryProps } from "./IQuestionSummaryProps";
-import SolveAnswear from "../solve-answear/SolveAnswear";
-import { IAnswearSolved } from "@/shared/interfaces";
+import SolveAnswer from "../solve-answer/SolveAnswer";
+import { IAnswerSolved } from "@/shared/interfaces";
 
 const QuestionSummary = (props: IQuestionSummaryProps) => {
   const { question } = props;
@@ -21,10 +21,10 @@ const QuestionSummary = (props: IQuestionSummaryProps) => {
       </CardHeader>
       <CardContent>
         <div className="grid gap-1">
-          {question.answers.map((answear) => (
-            <SolveAnswear
-              key={answear.id}
-              answear={answear as IAnswearSolved}
+          {question.answers.map((answer) => (
+            <SolveAnswer
+              key={answer.id}
+              answer={answer as IAnswerSolved}
               revealed
               small
             />

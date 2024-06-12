@@ -9,7 +9,7 @@ import {
 } from "@/components/ui";
 import { Plus, Trash } from "lucide-react";
 import { IEditQuestionProps } from "./IEditQuestionProps";
-import EditAnswear from "./edit-answear/EditAnswear";
+import EditAnswer from "./edit-answer/EditAnswer";
 import { Textarea } from "@/components/ui/textarea";
 import Client from "@/api/Client";
 
@@ -43,27 +43,27 @@ const EditQuestion = (props: IEditQuestionProps) => {
     }
   };
 
-  const handleAnswearDeleted = (answearId: string) => {
+  const handleAnswerDeleted = (answerId: string) => {
     setQuestion({
       ...question,
-      answers: question.answers.filter((a) => a.id !== answearId),
+      answers: question.answers.filter((a) => a.id !== answerId),
     });
   };
 
-  const handleAddAnswear = () => {
+  const handleAddAnswer = () => {
     if (question.id) {
-      const newAnswear = {
+      const newAnswer = {
         questionId: question.id,
         body: "",
         imgFile: "",
         valid: false,
       };
-      Client.Answears.postAnswear(newAnswear).then((response) => {
+      Client.Answers.postAnswer(newAnswer).then((response) => {
         setQuestion({
           ...question,
           answers: [
             ...(question.answers ?? []),
-            { ...newAnswear, id: response.id },
+            { ...newAnswer, id: response.id },
           ],
         });
       });
@@ -126,17 +126,17 @@ const EditQuestion = (props: IEditQuestionProps) => {
         <div>
           <Label>Odpowiedzi</Label>
           <div className="grid gap-1">
-            {question.answers.map((answear) => (
-              <EditAnswear
-                key={answear.id}
-                answear={answear}
-                onDeleted={handleAnswearDeleted}
+            {question.answers.map((answer) => (
+              <EditAnswer
+                key={answer.id}
+                answer={answer}
+                onDeleted={handleAnswerDeleted}
               />
             ))}
           </div>
         </div>
         <div className="mt-2">
-          <Button variant={"secondary"} onClick={handleAddAnswear}>
+          <Button variant={"secondary"} onClick={handleAddAnswer}>
             <Plus />
             Dodaj odpowiedź
           </Button>

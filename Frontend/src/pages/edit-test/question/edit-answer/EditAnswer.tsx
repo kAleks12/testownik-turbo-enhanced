@@ -1,34 +1,34 @@
 import { Button, Input } from "@/components/ui";
 import { Checkbox } from "@/components/ui/checkbox";
-import { IEditAnswearProps } from "./IEditAnswearProps";
+import { IEditAnswerProps } from "./IEditAnswerProps";
 import { Trash } from "lucide-react";
 import Client from "@/api/Client";
 import React from "react";
 
-const EditAnswear = (props: IEditAnswearProps) => {
-  const { answear: answearProps, onDeleted } = props;
-  const [answear, setAnswear] = React.useState(answearProps);
+const EditAnswer = (props: IEditAnswerProps) => {
+  const { answer: answerProps, onDeleted } = props;
+  const [answer, setAnswer] = React.useState(answerProps);
 
   React.useEffect(() => {
-    setAnswear(answearProps);
-  }, [answearProps]);
+    setAnswer(answerProps);
+  }, [answerProps]);
 
   const handleBodyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAnswear({ ...answear, body: event.target.value });
+    setAnswer({ ...answer, body: event.target.value });
   };
 
-  const updateAnswear = () => {
-    if (answear.id) {
-      Client.Answears.putAnswear(answear.id, { ...answear });
+  const updateAnswer = () => {
+    if (answer.id) {
+      Client.Answers.putAnswer(answer.id, { ...answer });
     }
   };
 
   const handleValidChange = () => {
-    setAnswear({ ...answear, valid: !answear.valid });
-    if (answear.id) {
-      Client.Answears.putAnswear(answear.id, {
-        ...answear,
-        valid: !answear.valid,
+    setAnswer({ ...answer, valid: !answer.valid });
+    if (answer.id) {
+      Client.Answers.putAnswer(answer.id, {
+        ...answer,
+        valid: !answer.valid,
       });
     }
   };
@@ -36,45 +36,45 @@ const EditAnswear = (props: IEditAnswearProps) => {
   const handleImgChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
-      Client.Answears.postAnswearImage(answear.id, file).then((response) => {
-        setAnswear({ ...answear, imgFile: response.url });
+      Client.Answers.postAnswerImage(answer.id, file).then((response) => {
+        setAnswer({ ...answer, imgFile: response.url });
       });
     }
   };
 
   const handleDeleteImg = () => {
-    if (answear.id) {
-      Client.Answears.deleteAnswearImage(answear.id).then(() => {
-        setAnswear({ ...answear, imgFile: "" });
+    if (answer.id) {
+      Client.Answers.deleteAnswerImage(answer.id).then(() => {
+        setAnswer({ ...answer, imgFile: "" });
       });
     }
   };
 
   const handleDelete = () => {
-    if (answear.id) {
-      Client.Answears.deleteAnswear(answear.id).then(() => {
-        onDeleted(answear.id);
+    if (answer.id) {
+      Client.Answers.deleteAnswer(answer.id).then(() => {
+        onDeleted(answer.id);
       });
     }
   };
   return (
     <div className="flex flex-row content-center gap-3 px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-800">
       <Checkbox
-        checked={answear.valid ?? false}
+        checked={answer.valid ?? false}
         onClick={handleValidChange}
         className="mt-3"
       />
       <div className="w-full gap-1">
         <Input
-          value={answear.body ?? ""}
+          value={answer.body ?? ""}
           onChange={handleBodyChange}
-          onBlur={updateAnswear}
+          onBlur={updateAnswer}
         />
-        {answear.imgFile ? (
+        {answer.imgFile ? (
           <div className="flex flex-row mt-2">
             <img
-              src={answear.imgFile}
-              alt="answear"
+              src={answer.imgFile}
+              alt="answer"
               className="max-w-[550px] rounded bg-white"
             />
             <Button variant={"ghost"} onClick={handleDeleteImg}>
@@ -92,4 +92,4 @@ const EditAnswear = (props: IEditAnswearProps) => {
   );
 };
 
-export default EditAnswear;
+export default EditAnswer;
