@@ -4,6 +4,7 @@ import { IEditAnswerProps } from "./IEditAnswerProps";
 import { Trash } from "lucide-react";
 import Client from "@/api/Client";
 import React from "react";
+import DeleteConfirmationPopup from "@/components/confirmation-message/DeleteConfirmationPopup";
 
 const EditAnswer = (props: IEditAnswerProps) => {
   const { answer: answerProps, onDeleted } = props;
@@ -85,9 +86,10 @@ const EditAnswer = (props: IEditAnswerProps) => {
           <Input type="file" accept="image/*" onChange={handleImgChange} />
         )}
       </div>
-      <Button variant={"ghost"} onClick={handleDelete}>
-        <Trash className="h-4 w-4" />
-      </Button>
+      <DeleteConfirmationPopup
+        onConfirm={handleDelete}
+        deletePopupHeader="Czy na pewno chcesz usunąć wybraną odpowiedź?"
+      />
     </div>
   );
 };

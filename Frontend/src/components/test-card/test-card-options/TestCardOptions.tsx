@@ -7,9 +7,10 @@ import {
   DropdownMenuTrigger,
   LinkButton,
 } from "@/components/ui";
-import { EllipsisVertical, PencilLine, Trash } from "lucide-react";
+import { EllipsisVertical, PencilLine } from "lucide-react";
 import Client from "@/api/Client";
 import { ITestCardOptionsProps } from "./ITestCardOptionsProps";
+import DeleteConfirmationPopup from "@/components/confirmation-message/DeleteConfirmationPopup";
 
 const TestCardOptions = (props: ITestCardOptionsProps) => {
   const { testId, onDeleted } = props;
@@ -20,13 +21,8 @@ const TestCardOptions = (props: ITestCardOptionsProps) => {
     });
   };
 
-  const editTest = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const stopPropagate = (event: React.MouseEvent) => {
     event.stopPropagation();
-  };
-
-  const deleteTest = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    handleDelete();
   };
 
   return (
@@ -43,7 +39,7 @@ const TestCardOptions = (props: ITestCardOptionsProps) => {
             href={`/edit/${testId}`}
             variant="ghost"
             className="h-5"
-            onClick={editTest}
+            onClick={stopPropagate}
           >
             <div className="flex flex-row gap-2 align-center justify-center">
               <PencilLine className="h-4 w-4" />
@@ -51,13 +47,13 @@ const TestCardOptions = (props: ITestCardOptionsProps) => {
             </div>
           </LinkButton>
         </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Button className="h-5" variant="ghost" onClick={deleteTest}>
-            <div className="flex flex-row gap-2 align-center justify-center">
-              <Trash className="h-4 w-4" />
-              Usuń
-            </div>
-          </Button>
+        <DropdownMenuItem onClick={stopPropagate}>
+          <DeleteConfirmationPopup
+            onConfirm={handleDelete}
+            showButtonLabel
+            narrow
+            deletePopupHeader="Czy na pewno chcesz usunąć wybrany testownik?"
+          />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
