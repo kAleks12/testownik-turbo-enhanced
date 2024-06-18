@@ -40,8 +40,6 @@ type Question struct {
 type Test struct {
 	Id         uuid.UUID  `json:"id"`
 	Name       string     `json:"name"`
-	CreatedBy  string     `json:"createdBy"`
-	ChangedBy  *string    `json:"changedBy"`
 	CreatedAt  time.Time  `json:"createdAt"`
 	Course     Course     `json:"course" gorm:"foreignKey:CourseId"`
 	CourseId   uuid.UUID  `json:"courseId"`
