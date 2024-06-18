@@ -55,7 +55,7 @@ func AddQuestionHandle(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 	}
-	_ = updateTestQuestion(ctx, question.TestId)
+	_ = updateTestQuestion(question.TestId)
 	ctx.JSON(200, gin.H{"id": id})
 }
 
@@ -154,7 +154,7 @@ func UpdateQuestionHandle(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	_ = updateTestQuestion(ctx, existingQuestion.TestId)
+	_ = updateTestQuestion(existingQuestion.TestId)
 	ctx.JSON(200, gin.H{"id": id})
 }
 
@@ -191,7 +191,7 @@ func DeleteQuestionHandle(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	_ = updateTestQuestion(ctx, *testId)
+	_ = updateTestQuestion(*testId)
 	ctx.JSON(200, gin.H{"message": "OK"})
 
 }
@@ -235,7 +235,7 @@ func AddImageHandle(ctx *gin.Context) {
 			return
 		}
 	}
-	_ = updateTestQuestion(ctx, *testId)
+	_ = updateTestQuestion(*testId)
 	ctx.JSON(http.StatusOK, gin.H{"url": url})
 }
 
@@ -280,7 +280,7 @@ func DeleteImageHandle(ctx *gin.Context) {
 			return
 		}
 	}
-	_ = updateTestQuestion(ctx, *testId)
+	_ = updateTestQuestion(*testId)
 	ctx.JSON(http.StatusOK, gin.H{"message": "OK"})
 }
 

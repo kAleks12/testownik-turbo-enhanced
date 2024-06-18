@@ -3,7 +3,6 @@ package services
 import (
 	"archive/zip"
 	"errors"
-	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
 	"io"
 	"mime/multipart"
@@ -95,23 +94,17 @@ func unzipArchive(file multipart.File, header *multipart.FileHeader) (*string, e
 	return &tempDir, nil
 }
 
-func updateTestAnswer(ctx *gin.Context, questionId uuid.UUID) error {
-	rawUser, _ := ctx.Get("user")
-	user := rawUser.(string)
+func updateTestAnswer(questionId uuid.UUID) error {
 	updateTime := time.Now().UTC()
 	question, _ := dal.GetQuestionFromDB(questionId)
 	test, _ := dal.GetTestFromDB(question.TestId)
-	test.ChangedBy = &user
 	test.ChangedAt = &updateTime
 	return dal.UpdateTestModel(test)
 }
 
-func updateTestQuestion(ctx *gin.Context, testId uuid.UUID) error {
-	rawUser, _ := ctx.Get("user")
-	user := rawUser.(string)
+func updateTestQuestion(testId uuid.UUID) error {
 	updateTime := time.Now().UTC()
 	test, _ := dal.GetTestFromDB(testId)
-	test.ChangedBy = &user
 	test.ChangedAt = &updateTime
 	return dal.UpdateTestModel(test)
 }

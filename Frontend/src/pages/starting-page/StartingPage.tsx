@@ -1,5 +1,7 @@
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/shared/hooks/auth/useAuth";
+import { Info } from "lucide-react";
 
 const StartingPage = () => {
   const { login } = useAuth();
@@ -13,8 +15,22 @@ const StartingPage = () => {
               Wznieś swoją naukę na wyżyny i osiągaj sukces!
             </p>
           </div>
-          <div className="grid gap-8 mt-4">
-            <Button onClick={login}>Zaloguj poprzez USOS</Button>
+          <div className="flex flex-row items-center justify-center gap-4 mt-4">
+            <Button className="flex-grow" onClick={login}>
+              Zaloguj poprzez USOS
+            </Button>
+            <HoverCard>
+              <HoverCardTrigger>
+                <Info />
+              </HoverCardTrigger>
+              <HoverCardContent>
+                <p>
+                  Dane pobierane z systemu USOS wykorzystywane są w celu
+                  uzyskania aktualnych kursów użytkownika. Dane nie są
+                  gromadzone.
+                </p>
+              </HoverCardContent>
+            </HoverCard>
           </div>
         </div>
       </div>

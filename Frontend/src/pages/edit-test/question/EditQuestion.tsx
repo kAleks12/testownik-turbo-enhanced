@@ -12,6 +12,7 @@ import { IEditQuestionProps } from "./IEditQuestionProps";
 import EditAnswer from "./edit-answer/EditAnswer";
 import { Textarea } from "@/components/ui/textarea";
 import Client from "@/api/Client";
+import DeleteConfirmationPopup from "@/components/confirmation-message/DeleteConfirmationPopup";
 
 const EditQuestion = (props: IEditQuestionProps) => {
   const { question: questProps, index, onDeleted, onUpdated } = props;
@@ -92,9 +93,10 @@ const EditQuestion = (props: IEditQuestionProps) => {
       <CardHeader>
         <div className="flex flex-row justify-between">
           <div className="text-xl font-bold">Pytanie {index + 1}</div>
-          <Button variant={"ghost"} onClick={handleDelete}>
-            <Trash className="h-5 w-5" />
-          </Button>
+          <DeleteConfirmationPopup
+            onConfirm={handleDelete}
+            deletePopupHeader="Czy na pewno chcesz usunąć wybrane pytanie?"
+          />
         </div>
       </CardHeader>
       <CardContent>

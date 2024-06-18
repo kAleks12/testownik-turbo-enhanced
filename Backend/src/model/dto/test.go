@@ -7,27 +7,24 @@ import (
 )
 
 type ListTest struct {
-	Id         uuid.UUID    `json:"id"`
-	Name       string       `json:"name"`
-	CreatedBy  string       `json:"createdBy"`
-	CourseId   string       `json:"courseId"`
-	CreatedAt  time.Time    `json:"createdAt"`
-	ChangedBy  *string      `json:"changedBy"`
-	ChangedAt  *time.Time   `json:"changedAt"`
-	Course     model.Course `json:"course"`
-	SchoolYear string       `json:"schoolYear"`
+	Id           uuid.UUID    `json:"id"`
+	Name         string       `json:"name"`
+	CreatedAt    time.Time    `json:"createdAt"`
+	ChangedAt    *time.Time   `json:"changedAt"`
+	Course       model.Course `json:"course"`
+	SchoolYear   string       `json:"schoolYear"`
+	QuestionSize int64        `json:"questionSize"`
 }
 
-func ToListTest(test model.Test) ListTest {
+func ToListTest(test model.Test, questionSize int64) ListTest {
 	return ListTest{
-		Id:         test.Id,
-		Name:       test.Name,
-		CreatedBy:  test.CreatedBy,
-		CreatedAt:  test.CreatedAt,
-		ChangedBy:  test.ChangedBy,
-		ChangedAt:  test.ChangedAt,
-		Course:     test.Course,
-		SchoolYear: test.SchoolYear,
+		Id:           test.Id,
+		Name:         test.Name,
+		CreatedAt:    test.CreatedAt,
+		ChangedAt:    test.ChangedAt,
+		Course:       test.Course,
+		SchoolYear:   test.SchoolYear,
+		QuestionSize: questionSize,
 	}
 }
 

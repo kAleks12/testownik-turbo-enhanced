@@ -63,3 +63,12 @@ func DeleteQuestionFromDB(id uuid.UUID) error {
 	result := DB.Delete(&model.Question{}, id)
 	return result.Error
 }
+
+func GetCountForTest(testId uuid.UUID) int64 {
+	var count int64
+	result := DB.Model(&model.Question{}).Where("test_id = ?", testId).Count(&count)
+	if result.Error != nil {
+		return 0
+	}
+	return count
+}
