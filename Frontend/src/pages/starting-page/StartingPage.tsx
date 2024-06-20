@@ -20,11 +20,11 @@ const StartingPage = () => {
               Zaloguj poprzez USOS
             </Button>
             <HoverCard>
-              <HoverCardTrigger>
+              <HoverCardTrigger asChild>
                 <Info />
               </HoverCardTrigger>
               <HoverCardContent>
-                <p>
+                <p className="text-center">
                   Dane pobierane z systemu USOS wykorzystywane są w celu
                   uzyskania aktualnych kursów użytkownika. Dane nie są
                   gromadzone.

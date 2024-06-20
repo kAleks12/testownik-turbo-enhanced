@@ -49,7 +49,7 @@ const SolveAnswer = (props: ISolveAnswerProps) => {
     <div
       className={cn(
         "p-2 border border-gray-300 rounded-lg shadow-md transition ease-in-out delay-200",
-        !small && "text-xl md:text-2xl p-4",
+        !small && "text-lg md:text-xl p-4",
         answerStyle,
         !revealed &&
           !answer.selected &&
