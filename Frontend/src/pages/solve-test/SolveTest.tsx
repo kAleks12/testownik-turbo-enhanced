@@ -5,7 +5,17 @@ import { IAnswerSolved, IQuestion, ITest } from "@/shared/interfaces";
 import { deepCopy, shuffle } from "@/shared/utils/helpers";
 import SolveQuestion from "./solve-question/SolveQuestion";
 import QuestionSummary from "./question-summary/QuestionSummary";
-import { Button, LinkButton, Progress } from "@/components/ui";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  Button,
+  LinkButton,
+  Progress,
+} from "@/components/ui";
 import Client from "@/api/Client";
 import Loader from "@/components/loader/Loader";
 import LocalStorage from "@/shared/utils/LocalStorage";
@@ -22,7 +32,7 @@ const SolveTest: React.FC = () => {
   const [solvedQuestions, setSolvedQuestions] = React.useState<IQuestion[]>([]);
   const [currentQuestion, setCurrentQuestion] =
     React.useState<IQuestion | null>();
-  const [counter, setCounter] = React.useState<number>(0);
+  const [counter, setCounter] = React.useState<number>(1);
   const [leftToSolve, setLeftToSolve] = React.useState<number>(0);
   const [solvedCount, setSolvedCount] = React.useState<number>(0);
   const [solvedIds, setSolvedIds] = React.useState<string[]>([]);
@@ -77,6 +87,9 @@ const SolveTest: React.FC = () => {
   }, [currentQuestion, questionsToSolve, solvedIds]);
 
   const finish = (answersSolved?: IAnswerSolved[]) => {
+    if (counter !== numberOfQuestions) {
+      setCounter(counter + 1);
+    }
     if (
       currentQuestion &&
       !solvedQuestions.some((question) => question.id === currentQuestion?.id)
@@ -104,15 +117,14 @@ const SolveTest: React.FC = () => {
     finish(answersSolved);
     if (correct) {
       setQuestionsToSolve((prev) => prev.slice(1));
-      setCounter(counter + 1);
     } else {
       setQuestionsToSolve((prev) => shuffle(prev));
+      setNumberOfQuestions((prev) => prev + 1);
     }
   };
 
   const handleSkip = () => {
     finish();
-    setCounter(counter + 1);
     setQuestionsToSolve((prev) => prev.slice(1));
   };
 
@@ -120,26 +132,37 @@ const SolveTest: React.FC = () => {
     setQuestions(shuffle(test?.questions ?? []));
     setSolvedQuestions([]);
     setSolvedIds([]);
-    setCounter(0);
+    setCounter(1);
   };
 
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Navbar />
       <Progress value={(counter * 100) / numberOfQuestions} />
-      <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-8 lg:p-8">
+      <div className="flex flex-col items-end mx-2">
+        <p className="text-primary">
+          {counter}/{numberOfQuestions}
+        </p>
+      </div>
+      <div className="flex flex-1 flex-col gap-4 lg:gap-8 mx-4 mb-4 md:mx-16 lg:mx-32">
         <div className="flex items-center justify-center text-center">
-          <div className="flex flex-col lg:flex-row flex-grow gap-2 lg:gap-8 justify-between">
-            <div className="grow" />
-            <div className="font-semibold leading-none tracking-tight text-xl md:text-2xl ">
-              {test?.name}
-            </div>
-            <div className="grow" />
-            <div className="text-primary font-bold leading-none text-2xl">
-              {test?.course?.name}&nbsp;({test?.course?.courseType})
-            </div>
-            <div className="grow" />
-          </div>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/home">Strona główna</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href={`/search?course=${test?.course?.name}`}>
+                  {test?.course?.name}&nbsp;({test?.course?.courseType})
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>{test?.name}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
         {currentQuestion && (
           <SolveQuestion
@@ -167,7 +190,7 @@ const SolveTest: React.FC = () => {
               </div>
             </div>
           )}
-      </main>
+      </div>
       <Loader isLoading={isLoading} />
     </div>
   );

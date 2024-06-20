@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 import { ITest } from "@/shared/interfaces";
 import { Search } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 const SearchCourse: React.FC = () => {
   const [tests, setTests] = useState<ITest[]>([]);
+  const [searchParams] = useSearchParams();
   const [filteredTests, setFilteredTests] = useState<ITest[]>([]);
   const [nameFilter, setNameFilter] = useState<string>("");
   const [teacherFilter, setTeacherFilter] = useState<string>("");
@@ -37,6 +39,13 @@ const SearchCourse: React.FC = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const courseParam = searchParams.get("course");
+    if (courseParam) {
+      setCourseFilter(courseParam);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const splitTeacher = teacherFilter.split(" ");
@@ -69,8 +78,15 @@ const SearchCourse: React.FC = () => {
       );
     }
     if (courseFilter) {
-      tests1 = tests1.filter((t) =>
-        t.course?.name?.toLowerCase().includes(courseFilter.toLowerCase())
+      tests1 = tests1.filter(
+        (t) =>
+          t.course?.name?.toLowerCase().includes(courseFilter.toLowerCase()) ||
+          t.course?.name
+            ?.split(" ")
+            .map((word) => word.charAt(0))
+            .join("")
+            .toLowerCase()
+            .includes(courseFilter.toLowerCase())
       );
     }
     setFilteredTests(tests1);

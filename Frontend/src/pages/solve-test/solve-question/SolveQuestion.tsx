@@ -37,7 +37,7 @@ const SolveQuestion = (props: ISolveQuestionProps) => {
 
   return (
     <div className="grid gap-4 transition ease-in-out delay-200">
-      <div className="text-2xl md:text-4xl text-center">
+      <div className="text-2xl md:text-3xl text-center">
         {question.body}
         <span className="text-muted-foreground">
           &nbsp;({solvedCount + 1}/{solvedCount + leftToSolve})

@@ -10,4 +10,5 @@ export interface ITest extends ITestUpdate {
   changedAt?: string;
   course?: ICourse;
   questions?: IQuestion[];
+  questionSize?: number;
 }

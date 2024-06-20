@@ -8,7 +8,7 @@ const QuestionSummary = (props: IQuestionSummaryProps) => {
   return (
     <Card>
       <CardHeader>
-        <div>{question.body}</div>
+        <div className="text-lg">{question.body}</div>
         <div>
           {question.imgFile && (
             <img

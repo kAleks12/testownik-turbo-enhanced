@@ -30,18 +30,22 @@ const TestCard = (props: ITestCardProps) => {
             <p className="text-primary font-bold">{test.course?.name}</p>
             <p className="italic">{test.course?.courseType}</p>
           </div>
-          {test.schoolYear && (
-            <div className="flex flex-row">
-              <p className="text-muted-foreground italic">Semestr:&nbsp;</p>
-              <p>{test.schoolYear}</p>
-            </div>
-          )}
           <div className="flex flex-row">
             <p className="text-muted-foreground italic">Prowadzący:&nbsp;</p>
             <p>
               {test.course?.teacher.name} {test.course?.teacher.surname}
             </p>
           </div>
+          <div className="flex flex-row">
+            <p className="text-muted-foreground italic">Pytania:&nbsp;</p>
+            <p>{test.questionSize}</p>
+          </div>
+          {test.schoolYear && (
+            <div className="flex flex-row">
+              <p className="text-muted-foreground italic">Semestr:&nbsp;</p>
+              <p>{test.schoolYear}</p>
+            </div>
+          )}
         </CardContent>
         <CardFooter>
           <div className="text-sm text-muted-foreground">
