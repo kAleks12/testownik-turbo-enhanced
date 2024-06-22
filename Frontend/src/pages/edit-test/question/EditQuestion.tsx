@@ -12,7 +12,7 @@ import { IEditQuestionProps } from "./IEditQuestionProps";
 import EditAnswer from "./edit-answer/EditAnswer";
 import { Textarea } from "@/components/ui/textarea";
 import Client from "@/api/Client";
-import DeleteConfirmationPopup from "@/components/confirmation-message/DeleteConfirmationPopup";
+import DeleteConfirmationPopup from "@/components/delete-confirmation-popup/DeleteConfirmationPopup";
 
 const EditQuestion = (props: IEditQuestionProps) => {
   const { question: questProps, index, onDeleted, onUpdated } = props;

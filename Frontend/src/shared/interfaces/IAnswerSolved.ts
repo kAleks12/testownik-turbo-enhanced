@@ -1,5 +1,5 @@
-import { IAnswer } from "./IAnswer";
-
-export interface IAnswerSolved extends IAnswer {
+export interface IAnswerSolved {
+  id: string;
+  valid: boolean;
   selected: boolean;
 }

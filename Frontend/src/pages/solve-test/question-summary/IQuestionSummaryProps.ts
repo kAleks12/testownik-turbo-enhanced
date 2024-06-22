@@ -1,5 +1,6 @@
-import { IQuestion } from "@/shared/interfaces";
+import { IQuestion, IQuestionSolved } from "@/shared/interfaces";
 
 export interface IQuestionSummaryProps {
-  question: IQuestion;
+  question?: IQuestion;
+  questionSolved: IQuestionSolved;
 }

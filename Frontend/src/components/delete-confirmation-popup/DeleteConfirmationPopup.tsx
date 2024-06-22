@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTrigger,
 } from "../ui";
-import { IDeleteConfirmationPopupProps } from "./IDeleteConfirmationPopup";
+import { IDeleteConfirmationPopupProps } from "./IDeleteConfirmationPopupProps";
 
 const DeleteConfirmationPopup = (props: IDeleteConfirmationPopupProps) => {
   const { showButtonLabel, deletePopupHeader, narrow, onConfirm } = props;

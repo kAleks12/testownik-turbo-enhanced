@@ -1,16 +1,22 @@
 import { Card, CardContent, CardHeader } from "@/components/ui";
 import { IQuestionSummaryProps } from "./IQuestionSummaryProps";
 import SolveAnswer from "../solve-answer/SolveAnswer";
-import { IAnswerSolved } from "@/shared/interfaces";
 
 const QuestionSummary = (props: IQuestionSummaryProps) => {
-  const { question } = props;
+  const { question, questionSolved } = props;
   return (
     <Card>
       <CardHeader>
-        <div className="text-lg">{question.body}</div>
+        <div className="text-lg flex flex-col md:flex-row">
+          {question?.body}
+          {questionSolved.skipped && (
+            <span className="flex-grow text-right text-muted-foreground text-sm md:text-base">
+              &nbsp;Pominięto
+            </span>
+          )}
+        </div>
         <div>
-          {question.imgFile && (
+          {question?.imgFile && (
             <img
               src={question.imgFile}
               alt="question"
@@ -21,10 +27,13 @@ const QuestionSummary = (props: IQuestionSummaryProps) => {
       </CardHeader>
       <CardContent>
         <div className="grid gap-1">
-          {question.answers.map((answer) => (
+          {question?.answers.map((answer) => (
             <SolveAnswer
               key={answer.id}
-              answer={answer as IAnswerSolved}
+              answer={answer}
+              solvedAnswer={questionSolved.answers.find(
+                (x) => x.id === answer.id
+              )}
               revealed
               small
             />

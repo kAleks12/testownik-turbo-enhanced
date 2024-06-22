@@ -1,7 +1,8 @@
-import { IAnswerSolved } from "@/shared/interfaces";
+import { IAnswerSolved, IAnswer } from "@/shared/interfaces";
 
 export interface ISolveAnswerProps {
-  answer: IAnswerSolved;
+  answer?: IAnswer;
+  solvedAnswer?: IAnswerSolved;
   revealed?: boolean;
   small?: boolean;
 }
