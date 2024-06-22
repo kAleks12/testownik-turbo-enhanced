@@ -10,7 +10,7 @@ import {
 import { EllipsisVertical, PencilLine } from "lucide-react";
 import Client from "@/api/Client";
 import { ITestCardOptionsProps } from "./ITestCardOptionsProps";
-import DeleteConfirmationPopup from "@/components/confirmation-message/DeleteConfirmationPopup";
+import DeleteConfirmationPopup from "@/components/delete-confirmation-popup/DeleteConfirmationPopup";
 
 const TestCardOptions = (props: ITestCardOptionsProps) => {
   const { testId, onDeleted } = props;

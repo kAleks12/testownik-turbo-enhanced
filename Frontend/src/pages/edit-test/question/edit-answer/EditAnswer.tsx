@@ -4,7 +4,7 @@ import { IEditAnswerProps } from "./IEditAnswerProps";
 import { Trash } from "lucide-react";
 import Client from "@/api/Client";
 import React from "react";
-import DeleteConfirmationPopup from "@/components/confirmation-message/DeleteConfirmationPopup";
+import DeleteConfirmationPopup from "@/components/delete-confirmation-popup/DeleteConfirmationPopup";
 
 const EditAnswer = (props: IEditAnswerProps) => {
   const { answer: answerProps, onDeleted } = props;

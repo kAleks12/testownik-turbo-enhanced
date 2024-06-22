@@ -3,6 +3,7 @@ export * from "./ITest";
 export * from "./ICourse";
 export * from "./IQuestion";
 export * from "./IQuestionUpdate";
+export * from "./IQuestionSolved";
 export * from "./IAnswer";
 export * from "./IAnswerSolved";
 export * from "./IAnswerUpdate";

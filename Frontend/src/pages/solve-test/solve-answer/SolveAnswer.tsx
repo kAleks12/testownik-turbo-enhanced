@@ -3,33 +3,33 @@ import { ISolveAnswerProps } from "./ISolveAnswerProps";
 import { cn } from "@/lib/utils";
 
 const SolveAnswer = (props: ISolveAnswerProps) => {
-  const { answer, revealed, small } = props;
+  const { solvedAnswer, answer, revealed, small } = props;
   const [answerStyle, setAnswerStyle] = React.useState("");
 
   const handleClick = () => {
-    if (revealed) {
+    if (revealed || !solvedAnswer) {
       return;
     }
-    if (!answer.selected) {
+    if (!solvedAnswer.selected) {
       setAnswerStyle("bg-gray-300 dark:bg-gray-700");
-      answer.selected = true;
+      solvedAnswer.selected = true;
     } else {
       setAnswerStyle("");
-      answer.selected = false;
+      solvedAnswer.selected = false;
     }
   };
 
   React.useEffect(() => {
     if (!revealed) {
-      if (answer.selected) {
+      if (solvedAnswer?.selected) {
         setAnswerStyle("bg-gray-300 dark:bg-gray-700");
         return;
       }
       setAnswerStyle("");
       return;
     }
-    if (answer.valid) {
-      if (answer.selected) {
+    if (solvedAnswer?.valid) {
+      if (solvedAnswer?.selected) {
         setAnswerStyle("bg-green-600 dark:bg-green-900");
         return;
       }
@@ -38,12 +38,12 @@ const SolveAnswer = (props: ISolveAnswerProps) => {
       );
       return;
     }
-    if (answer.selected && !answer.valid) {
+    if (solvedAnswer?.selected && !solvedAnswer?.valid) {
       setAnswerStyle("bg-red-500 dark:bg-red-800");
       return;
     }
     setAnswerStyle("");
-  }, [answer, revealed]);
+  }, [solvedAnswer, revealed]);
 
   return (
     <div
@@ -52,14 +52,14 @@ const SolveAnswer = (props: ISolveAnswerProps) => {
         !small && "text-lg md:text-xl p-4",
         answerStyle,
         !revealed &&
-          !answer.selected &&
+          !solvedAnswer?.selected &&
           "cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-900"
       )}
       onClick={handleClick}
     >
-      {answer.body}
+      {answer?.body}
       <div>
-        {answer.imgFile && (
+        {answer?.imgFile && (
           <img
             src={answer.imgFile}
             alt="answer"

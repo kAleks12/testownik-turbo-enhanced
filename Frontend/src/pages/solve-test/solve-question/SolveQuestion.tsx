@@ -8,7 +8,7 @@ import { IAnswerSolved } from "@/shared/interfaces";
 
 const SolveQuestion = (props: ISolveQuestionProps) => {
   const { question, onNext, onSkip, leftToSolve, solvedCount } = props;
-  const [answers, setAnswers] = React.useState<IAnswerSolved[]>([]);
+  const [solvedAnswers, setAnswers] = React.useState<IAnswerSolved[]>([]);
   const [isRevealed, setIsRevealed] = React.useState(false);
 
   const handleShow = () => {
@@ -16,7 +16,7 @@ const SolveQuestion = (props: ISolveQuestionProps) => {
   };
 
   const handleNext = () => {
-    onNext(answers);
+    onNext(solvedAnswers);
     setIsRevealed(false);
   };
 
@@ -29,7 +29,7 @@ const SolveQuestion = (props: ISolveQuestionProps) => {
     setAnswers(
       shuffle(
         question.answers.map((answer) => {
-          return { selected: false, ...answer };
+          return { id: answer.id, selected: false, valid: answer.valid };
         })
       )
     );
@@ -53,14 +53,19 @@ const SolveQuestion = (props: ISolveQuestionProps) => {
         )}
       </div>
       <div className="flex flex-col gap-1">
-        {answers.map((answer) => (
-          <SolveAnswer key={answer.id} answer={answer} revealed={isRevealed} />
+        {solvedAnswers.map((solvedAnswer) => (
+          <SolveAnswer
+            key={solvedAnswer.id}
+            answer={question.answers.find((x) => x.id === solvedAnswer.id)}
+            solvedAnswer={solvedAnswer}
+            revealed={isRevealed}
+          />
         ))}
       </div>
       <div className="flex gap-2">
         <div className="grow" />
         <Button variant={"secondary"} onClick={handleSkip}>
-          Skip
+          Pomiń pytanie
         </Button>
         {isRevealed && (
           <Button onClick={handleNext} className="gap-1">
