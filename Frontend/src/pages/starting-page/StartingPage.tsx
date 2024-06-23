@@ -25,13 +25,19 @@ const StartingPage = () => {
               Wznieś swoją naukę na wyżyny i osiągaj sukces!
             </p>
           </div>
-          <div className="flex flex-row items-center justify-center gap-4 mt-4">
+          <div className="flex flex-row items-center justify-center gap-2 mt-4">
             <Button className="flex-grow" onClick={login}>
               Zaloguj poprzez USOS
             </Button>
             <HoverCard open={isInfoOpen} onOpenChange={onOpenChange}>
               <HoverCardTrigger asChild>
-                <Button variant="ghost" onMouseOver={onInfo} onClick={onInfo}>
+                <Button
+                  variant="ghost"
+                  onMouseOver={onInfo}
+                  onClick={onInfo}
+                  className="rounded-full"
+                  size="icon"
+                >
                   <Info />
                 </Button>
               </HoverCardTrigger>
