@@ -42,7 +42,7 @@ const ProgressPopup = (props: IProgressPopupProps) => {
           <br />
           Rozpoczęcie rozwiązywania testu nadpisze obecny postęp.
         </p>
-        <DialogFooter>
+        <DialogFooter className="gap-2">
           <Button variant="outline" onClick={onClose}>
             Nie
           </Button>

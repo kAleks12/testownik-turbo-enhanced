@@ -53,7 +53,7 @@ const DeleteConfirmationPopup = (props: IDeleteConfirmationPopupProps) => {
           Tej akcji nie można cofnąć i spowoduje usunięcie u wszystkich
           użytkowników
         </p>
-        <DialogFooter>
+        <DialogFooter className="gap-2">
           <Button variant="outline" onClick={onClose}>
             Anuluj
           </Button>
