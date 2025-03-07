@@ -8,6 +8,7 @@ on:
 jobs:
   build-and-deploy-dotnet-connector:
     runs-on: ubuntu-latest
+    environment: def
     env:
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'USOSConnector/USOSConnector.Functions'
       AZURE_FUNCTIONAPP_NAME: 'func-pwr-testo-dev'
@@ -36,6 +37,8 @@ jobs:
 
   build-and-deploy-react-frontend:  
     runs-on: ubuntu-latest
+    environment: def
+
     env:
       REACT_FRONTEND_PATH: 'Frontend'
       NOTE_VERSION: '18.x'
@@ -71,6 +74,8 @@ jobs:
 
   build-and-deploy-golang-backend:  
     runs-on: ubuntu-latest
+    environment: def
+
     env:
       GOLANG_BACKEND_PATH: 'Backend'
       GOLANG_DOCKERFILE_PATH: './docker/Dockerfile'
