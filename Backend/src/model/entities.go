@@ -5,6 +5,14 @@ import (
 	"time"
 )
 
+type User struct {
+	Id        uuid.UUID `json:"id"`
+	Username  string    `json:"username"`
+	Password  string    `json:"password"`
+	FirstName string    `json:"firstName"`
+	LastName  string    `json:"lastName"`
+}
+
 type Answer struct {
 	Id         uuid.UUID `json:"id"`
 	QuestionId uuid.UUID `json:"questionId"`

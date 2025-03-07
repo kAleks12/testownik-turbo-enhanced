@@ -68,3 +68,16 @@ type EditSubAnswer struct {
 	SubAnswer
 	Id *uuid.UUID `json:"id"`
 }
+
+// User models
+type NewUserRequest struct {
+	Nickname  string `json:"nickname"`
+	Password  string `json:"password"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+}
+
+type LoginRequest struct {
+	Nickname string `json:"nickname"`
+	Password string `json:"password"`
+}

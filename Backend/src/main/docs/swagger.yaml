@@ -96,8 +96,6 @@ definitions:
     type: object
   src_model_dto.FullCourse:
     properties:
-      active:
-        type: boolean
       courseType:
         type: string
       id:
@@ -159,20 +157,16 @@ definitions:
     properties:
       changedAt:
         type: string
-      changedBy:
-        type: string
       course:
         $ref: '#/definitions/model.Course'
-      courseId:
-        type: string
       createdAt:
-        type: string
-      createdBy:
         type: string
       id:
         type: string
       name:
         type: string
+      questionSize:
+        type: integer
       schoolYear:
         type: string
     type: object
@@ -184,6 +178,24 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  src_model_dto.LoginRequest:
+    properties:
+      nickname:
+        type: string
+      password:
+        type: string
+    type: object
+  src_model_dto.NewUserRequest:
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
     type: object
   src_model_dto.QuestionRequest:
     properties:
@@ -223,6 +235,15 @@ definitions:
       name:
         type: string
       schoolYear:
+        type: string
+    type: object
+  src_model_dto.TokenResponse:
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      token:
         type: string
     type: object
   src_model_dto.UrlResponse:
@@ -1081,27 +1102,6 @@ paths:
       summary: Update test
       tags:
       - test
-  /api/v1/test/active:
-    get:
-      description: Get all user active tests
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/src_model_dto.ListTest'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/src_model_dto.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Get active tests
-      tags:
-      - test
   /api/v1/test/import:
     post:
       description: Import test from zip file
@@ -1145,6 +1145,62 @@ paths:
       summary: Import test
       tags:
       - test
+  /api/v1/user/:
+    post:
+      description: Add user from json body
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/src_model_dto.NewUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/src_model_dto.IdResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/src_model_dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/src_model_dto.ErrorResponse'
+      summary: Add user
+      tags:
+      - user
+  /api/v1/user/login:
+    post:
+      description: Login user from json body
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/src_model_dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/src_model_dto.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/src_model_dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/src_model_dto.ErrorResponse'
+      summary: Login
+      tags:
+      - user
 securityDefinitions:
   BearerAuth:
     in: header

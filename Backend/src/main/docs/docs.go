@@ -1199,40 +1199,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/test/active": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get all user active tests",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "test"
-                ],
-                "summary": "Get active tests",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/src_model_dto.ListTest"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/test/import": {
             "post": {
                 "security": [
@@ -1447,6 +1413,92 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/user/": {
+            "post": {
+                "description": "Add user from json body",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Add user",
+                "parameters": [
+                    {
+                        "description": "User data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.NewUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.IdResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/login": {
+            "post": {
+                "description": "Login user from json body",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "User data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.TokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1600,9 +1652,6 @@ const docTemplate = `{
         "src_model_dto.FullCourse": {
             "type": "object",
             "properties": {
-                "active": {
-                    "type": "boolean"
-                },
                 "courseType": {
                     "type": "string"
                 },
@@ -1697,19 +1746,10 @@ const docTemplate = `{
                 "changedAt": {
                     "type": "string"
                 },
-                "changedBy": {
-                    "type": "string"
-                },
                 "course": {
                     "$ref": "#/definitions/model.Course"
                 },
-                "courseId": {
-                    "type": "string"
-                },
                 "createdAt": {
-                    "type": "string"
-                },
-                "createdBy": {
                     "type": "string"
                 },
                 "id": {
@@ -1717,6 +1757,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "questionSize": {
+                    "type": "integer"
                 },
                 "schoolYear": {
                     "type": "string"
@@ -1734,6 +1777,34 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "src_model_dto.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "nickname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "src_model_dto.NewUserRequest": {
+            "type": "object",
+            "properties": {
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
                 }
             }
         },
@@ -1795,6 +1866,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "schoolYear": {
+                    "type": "string"
+                }
+            }
+        },
+        "src_model_dto.TokenResponse": {
+            "type": "object",
+            "properties": {
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "token": {
                     "type": "string"
                 }
             }

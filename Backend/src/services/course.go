@@ -61,11 +61,9 @@ func GetCoursesHandle(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	activeCourses, _ := GetActiveUserCourses(ctx)
 	output := make([]dto.FullCourse, 0, len(courses))
 	for _, course := range courses {
-		_, active := activeCourses[course.Id]
-		output = append(output, dto.ToFullCourse(course, active))
+		output = append(output, dto.ToFullCourse(course))
 	}
 	ctx.JSON(200, output)
 }
@@ -91,9 +89,7 @@ func GetCourseHandle(ctx *gin.Context) {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	activeCourses, _ := GetActiveUserCourses(ctx)
-	_, active := activeCourses[course.Id]
-	ctx.JSON(200, dto.ToFullCourse(*course, active))
+	ctx.JSON(200, dto.ToFullCourse(*course))
 }
 
 // UpdateCourseHandle            godoc

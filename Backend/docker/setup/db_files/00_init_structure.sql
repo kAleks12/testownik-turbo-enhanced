@@ -56,6 +56,15 @@ CREATE TABLE IF NOT EXISTS "system"."answer"
     "valid"       bool    NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS "system"."user"
+(
+    "id"          uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "username" varchar NOT NULL UNIQUE,
+    "password" varchar NOT NULL,
+    "first_name"varchar NOT NULL,
+    "last_name" varchar NOT NULL
+    );
+
 ALTER TABLE "system"."test"
     ADD FOREIGN KEY ("course_id") REFERENCES "system"."course" ("id");
 

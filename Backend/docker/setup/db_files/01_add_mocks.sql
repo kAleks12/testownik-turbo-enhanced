@@ -23,3 +23,8 @@ insert into system.answer(id, question_id, body, valid) VALUES
 ('75b724b7-e6e5-4370-b18b-14d88fbe0f8c', 'f71a41ce-10f8-473a-b295-3c5ad0ba3f9c', '9.82 m/s^2', false),
 ('14f81dc7-0dc2-4792-9252-1060c4446567', 'f71a41ce-10f8-473a-b295-3c5ad0ba3f9c', '9.83 m/s^2', false),
 ('39149cc8-4c0e-4bd0-b004-5dad311a3bf9', 'f71a41ce-10f8-473a-b295-3c5ad0ba3f9c', '9.84 m/s^2', false);
+
+
+insert into system.user(id, username, password, first_name, last_name) VALUES
+('448e39e7-ef10-441e-b6b2-71463274236c', 'kaleks', '781dd45a27bda099c082b7c79004dfabe2ab0866f80c67d3129a2b1defe811e252a5340f3d5de44e22c526cf4eba95690fb8077b28dfa8ea82265ccd3c1b89ba', 'Kacper', 'Aleks'),
+('6d17488f-719d-4de9-9f02-ebc2169d48c7', 'dgnieciak','a77967f5c95cb1f7c50985e6926f577d1da69b21fa5d2a6d47befb2c2dd78a74473dd54c2a2d3fd6db4865cafead40baf53ae9077455b82fcc3c06cb86757ec7', 'Damian', 'Gnieciak');

@@ -75,30 +75,6 @@ func GetTestsHandle(ctx *gin.Context) {
 	ctx.JSON(200, output)
 }
 
-// GetActiveTestsHandle            godoc
-// @Summary      Get active tests
-// @Description  Get all user active tests
-// @Tags         test
-// @Produce      json
-// @Success      200  {array}  dto.ListTest
-// @Failure     500  {object} dto.ErrorResponse
-// @Security     BearerAuth
-// @Router       /api/v1/test/active [get]
-func GetActiveTestsHandle(ctx *gin.Context) {
-	_, activeCourses := GetActiveUserCourses(ctx)
-	tests, err := dal.GetTestsById(activeCourses)
-	if err != nil {
-		ctx.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-	//loop over tests and convert to listTest
-	output := make([]dto.ListTest, len(tests))
-	for i, test := range tests {
-		output[i] = dto.ToListTest(test, dal.GetCountForTest(test.Id))
-	}
-	ctx.JSON(200, output)
-}
-
 // GetTestHandle            godoc
 // @Summary      Get test
 // @Description  Get test by id
@@ -275,7 +251,6 @@ func AddTestHandlers(router *gin.RouterGroup) {
 	subGroup.GET(":id", GetTestHandle)
 	subGroup.PUT(":id", UpdateTestHandle)
 	subGroup.DELETE(":id", DeleteTestHandle)
-	subGroup.GET("active", GetActiveTestsHandle)
 	subGroup.POST("import", ImportTestHandle)
 }
 
