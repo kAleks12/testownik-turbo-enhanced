@@ -1145,34 +1145,6 @@ paths:
       summary: Import test
       tags:
       - test
-  /api/v1/user/:
-    post:
-      description: Add user from json body
-      parameters:
-      - description: User data
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/src_model_dto.NewUserRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/src_model_dto.IdResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/src_model_dto.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/src_model_dto.ErrorResponse'
-      summary: Add user
-      tags:
-      - user
   /api/v1/user/login:
     post:
       description: Login user from json body
@@ -1199,6 +1171,34 @@ paths:
           schema:
             $ref: '#/definitions/src_model_dto.ErrorResponse'
       summary: Login
+      tags:
+      - user
+  /api/v1/user/register:
+    post:
+      description: Add user from json body
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/src_model_dto.NewUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/src_model_dto.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/src_model_dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/src_model_dto.ErrorResponse'
+      summary: Add user
       tags:
       - user
 securityDefinitions:

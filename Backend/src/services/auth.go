@@ -62,11 +62,11 @@ func RequireAuth(c *gin.Context) {
 // @Description  Add user from json body
 // @Tags         user
 // @Produce      json
-// @Success      200  {object} dto.IdResponse
+// @Success      200  {object} dto.TokenResponse
 // @Failure     400  {object} dto.ErrorResponse
 // @Failure     500  {object} dto.ErrorResponse
 // @Param        user body dto.NewUserRequest true "User data"
-// @Router       /api/v1/user/ [post]
+// @Router       /api/v1/user/register [post]
 func AddUserHandle(ctx *gin.Context) {
 	var request dto.NewUserRequest
 	err := ctx.BindJSON(&request)
@@ -100,7 +100,13 @@ func AddUserHandle(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, gin.H{"id": id})
+	tokenString := createToken(request.Nickname, err)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(200, dto.ToTokenResponse(tokenString, user))
 }
 
 // LoginUserHandle            godoc
@@ -132,12 +138,7 @@ func LoginUserHandle(ctx *gin.Context) {
 		return
 	}
 
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["usos_id"] = request.Nickname
-	claims["exp"] = time.Now().Add(time.Hour * 2).Unix()
-	secret := os.Getenv("TOKEN_SECRET")
-	tokenString, err := token.SignedString([]byte(secret))
+	tokenString := createToken(request.Nickname, err)
 
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
@@ -147,9 +148,19 @@ func LoginUserHandle(ctx *gin.Context) {
 	ctx.JSON(200, dto.ToTokenResponse(tokenString, user))
 }
 
+func createToken(nickname string, err error) string {
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["usos_id"] = nickname
+	claims["exp"] = time.Now().Add(time.Hour * 2).Unix()
+	secret := os.Getenv("TOKEN_SECRET")
+	tokenString, err := token.SignedString([]byte(secret))
+	return tokenString
+}
+
 func AddUserHandlers(router *gin.RouterGroup) {
 	var subGroup = router.Group("/user")
-	subGroup.POST("", AddUserHandle)
+	subGroup.POST("/register", AddUserHandle)
 	subGroup.POST("/login", LoginUserHandle)
 }
 
@@ -165,7 +176,6 @@ func isValidPassword(password string) bool {
 	if len(password) < 8 {
 		return false
 	}
-
 	lowercase := regexp.MustCompile(`[a-z]`)
 	uppercase := regexp.MustCompile(`[A-Z]`)
 	digit := regexp.MustCompile(`\d`)

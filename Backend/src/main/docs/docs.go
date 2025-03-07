@@ -1414,49 +1414,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/user/": {
-            "post": {
-                "description": "Add user from json body",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "Add user",
-                "parameters": [
-                    {
-                        "description": "User data",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/src_model_dto.NewUserRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/src_model_dto.IdResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/user/login": {
             "post": {
                 "description": "Login user from json body",
@@ -1475,6 +1432,49 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/src_model_dto.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.TokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/register": {
+            "post": {
+                "description": "Add user from json body",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Add user",
+                "parameters": [
+                    {
+                        "description": "User data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/src_model_dto.NewUserRequest"
                         }
                     }
                 ],
