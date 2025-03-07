@@ -25,11 +25,11 @@ func main() {
 	services.AddQuestionHandlers(defaultGroup)
 	services.AddAnswerHandlers(defaultGroup)
 	services.AddTestHandlers(defaultGroup)
+	services.AddUserHandlers(defaultGroup)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	err := router.Run(os.Getenv("ADDRESS"))
 	if err != nil {
 		fmt.Println("Gin error occurred: ", err)
 	}
-
 }
