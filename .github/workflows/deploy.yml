@@ -6,35 +6,6 @@ on:
     branches: ["master"]
 
 jobs:
-  build-and-deploy-dotnet-connector:
-    runs-on: ubuntu-latest
-    environment: def
-    env:
-      AZURE_FUNCTIONAPP_PACKAGE_PATH: 'USOSConnector/USOSConnector.Functions'
-      AZURE_FUNCTIONAPP_NAME: 'func-pwr-testo-dev'
-
-    steps:
-    - name: Checkout GitHub Action
-      uses: actions/checkout@v3
-
-    - name: Setup DotNet 8.0.x Environment
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0.x'
-
-    - name: Resolve Project Dependencies Using Dotnet
-      run: |
-        pushd ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-        dotnet build --configuration Release --output ./output
-        popd
-
-    - name: Run Azure Functions Action
-      uses: Azure/functions-action@v1
-      with:
-        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output
-        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
-
   build-and-deploy-react-frontend:  
     runs-on: ubuntu-latest
     environment: def
