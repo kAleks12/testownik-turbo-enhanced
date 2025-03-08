@@ -54,10 +54,6 @@ const Router = createBrowserRouter([
       {
         path: Routes.Register,
         element: <Register />,
-      },
-      {
-        path: "*",
-        element: <ErrorPage />,
       }
     ],
   },

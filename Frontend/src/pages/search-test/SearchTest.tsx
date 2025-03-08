@@ -27,8 +27,6 @@ const SearchCourse: React.FC = () => {
     const fetchData = async () => {
       try {
         const testsData = await Client.Tests.getTests();
-        console.log("Tests data:", testsData);
-
         setTests(testsData);
       } catch (error) {
         console.error("An error occurred while fetching tests:", error);
