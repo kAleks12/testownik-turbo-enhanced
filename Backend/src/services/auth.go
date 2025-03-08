@@ -128,12 +128,8 @@ func LoginUserHandle(ctx *gin.Context) {
 	}
 
 	user, err := dal.GetUserFromDB(request.Nickname)
-	if err != nil {
-		ctx.JSON(404, gin.H{"error": err.Error()})
-		return
-	}
 
-	if !checkUserPassword(user, request.Password) {
+	if err != nil || !checkUserPassword(user, request.Password) {
 		ctx.JSON(401, gin.H{"error": "Invalid username or password"})
 		return
 	}
