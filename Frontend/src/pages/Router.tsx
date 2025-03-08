@@ -9,10 +9,13 @@ import AddNew from "./add-new/AddNew";
 import EditTest from "./edit-test/EditTest";
 import SolveTest from "./solve-test/SolveTest";
 import SearchCourse from "./search-test/SearchTest";
+import Register from "./register/Register";
+import Routes from "@/shared/utils/routes";
+import Login from "./login/Login";
 
 const Router = createBrowserRouter([
   {
-    path: "/",
+    path: Routes.Root,
     element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
@@ -21,29 +24,41 @@ const Router = createBrowserRouter([
         element: <StartingPage />,
       },
       {
-        path: "/home",
+        path: Routes.Home,
         element: <PrivateRoute Component={Home} />,
       },
       {
-        path: "/add-new",
+        path: Routes.AddNew,
         element: <PrivateRoute Component={AddNew} />,
       },
       {
-        path: "/edit/:id",
+        path: Routes.EditTest,
         element: <PrivateRoute Component={EditTest} />,
       },
       {
-        path: "/solve/:id",
+        path: Routes.SolveTest,
         element: <PrivateRoute Component={SolveTest} />,
       },
       {
-        path: "/search",
+        path: Routes.SearchCourse,
         element: <PrivateRoute Component={SearchCourse} />,
       },
       {
-        path: "/loading",
+        path: Routes.Loading,
         element: <LoadingPage />,
       },
+      {
+        path: Routes.Login,
+        element: <Login />,
+      },
+      {
+        path: Routes.Register,
+        element: <Register />,
+      },
+      {
+        path: "*",
+        element: <ErrorPage />,
+      }
     ],
   },
 ]);
