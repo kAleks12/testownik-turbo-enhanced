@@ -6,6 +6,7 @@ import Tests from "./Tests";
 import Questions from "./Questions";
 import Answers from "./Answers";
 import Courses from "./Courses";
+import User from "./User";
 
 axios.interceptors.request.use((setup) => {
   const user = LocalStorage.getStoredValue<IUser>(LocalStorageElements.User);
@@ -61,6 +62,7 @@ const Client = {
   Questions,
   Answers,
   Courses,
+  User
 };
 
 export default Client;

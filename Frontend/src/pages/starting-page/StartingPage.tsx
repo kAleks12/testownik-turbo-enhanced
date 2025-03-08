@@ -1,19 +1,16 @@
-import React from "react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/shared/hooks/auth/useAuth";
-import { Info } from "lucide-react";
+import Routes from "@/shared/utils/routes";
+import { useNavigate } from "react-router-dom";
 
 const StartingPage = () => {
-  const { login } = useAuth();
-  const [isInfoOpen, setIsInfoOpen] = React.useState(false);
+  const navigate = useNavigate();
 
-  const onInfo = () => {
-    setIsInfoOpen(true);
-  };
-  const onOpenChange = (open: boolean) => {
-    setIsInfoOpen(open);
-  };
+  const onLogin = () => {
+    navigate(Routes.Login);
+  }
+  const onRegister = () => {
+    navigate(Routes.Register);
+  }
 
   return (
     <main className="w-full min-h-screen lg:grid lg:grid-cols-2">
@@ -26,29 +23,12 @@ const StartingPage = () => {
             </p>
           </div>
           <div className="flex flex-row items-center justify-center gap-2 mt-4">
-            <Button className="flex-grow" onClick={login}>
-              Zaloguj poprzez USOS
+            <Button className="flex-grow" onClick={onLogin}>
+              Zaloguj się
             </Button>
-            <HoverCard open={isInfoOpen} onOpenChange={onOpenChange}>
-              <HoverCardTrigger asChild>
-                <Button
-                  variant="ghost"
-                  onMouseOver={onInfo}
-                  onClick={onInfo}
-                  className="rounded-full"
-                  size="icon"
-                >
-                  <Info />
-                </Button>
-              </HoverCardTrigger>
-              <HoverCardContent>
-                <p className="text-center">
-                  Dane pobierane z systemu USOS wykorzystywane są w celu
-                  uzyskania aktualnych kursów użytkownika. Dane nie są
-                  gromadzone.
-                </p>
-              </HoverCardContent>
-            </HoverCard>
+            <Button variant="secondary" className="flex-grow" onClick={onRegister}>
+              Zarejestruj się
+            </Button>
           </div>
         </div>
       </div>
