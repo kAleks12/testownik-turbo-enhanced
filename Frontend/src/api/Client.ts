@@ -7,6 +7,7 @@ import Questions from "./Questions";
 import Answers from "./Answers";
 import Courses from "./Courses";
 import User from "./User";
+import Routes from "@/shared/utils/routes";
 
 axios.interceptors.request.use((setup) => {
   const user = LocalStorage.getStoredValue<IUser>(LocalStorageElements.User);
@@ -33,10 +34,14 @@ axios.interceptors.response.use(
     const { status } = error.response;
 
     switch (status) {
-      case StatusCodes.BadRequest:
-        break;
+      // case StatusCodes.BadRequest:
+      //   break;
 
       case StatusCodes.Unauthorized:
+        if (window.location.pathname === Routes.Login || window.location.pathname === Routes.Register) {
+          return Promise.reject(error);
+        }
+
         window.alert("Sesja wygasła, zaloguj się ponownie");
         window.location.href = "/";
         break;
