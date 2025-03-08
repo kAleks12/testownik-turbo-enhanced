@@ -11,3 +11,6 @@ export * from "./ITeacher";
 export * from "./ITestUpdate";
 export * from "./IResponseId";
 export * from "./IResponseUrl";
+export * from "./ILogin";
+export * from "./IRegister";
+export * from "./IError";

@@ -1,3 +1,6 @@
+import { AxiosError } from "axios";
+import { IError } from "../interfaces";
+
 export const shuffle = <T>(array: T[]): T[] => {
   const arrCpy = deepCopy(array);
   return arrCpy.sort(() => Math.random() - 0.5);
@@ -16,3 +19,10 @@ export const formatDate = (dateString: string) => {
 
   return new Date(dateString).toLocaleDateString("pl-PL", options);
 };
+
+export const getErrorMessage = (error: unknown) => {
+  const axiosError = error as AxiosError;
+  const errorData = axiosError?.response?.data as IError;
+  const errorMessage = errorData?.error || "Wystąpił błąd.";
+  return errorMessage;
+}
